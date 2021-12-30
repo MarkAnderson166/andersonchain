@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Anderson Chain</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="Anderson Chain">
+  <meta name="keywords" content="COSC301, UNE">
+  <meta name="author" content="Mark Anderson">
+  <meta http-equiv='cache-control' content='no-cache'>
+  <meta http-equiv='expires' content='0'>
+  <meta http-equiv='pragma' content='no-cache'>
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="js/wallet.js"></script>
+  <script type="text/javascript" src="js/transaction.js"></script>
+  <script type="text/javascript" src="js/block.js"></script>
+  <script type="text/javascript" src="js/helperFunctions.js"></script>
+</head>
+<body>
+
+  <!-- left wrapper -->
+  <div id="wrapper" class="wrapper">
+
+    <!-- left wrapper -->
+    <div id="leftWrapper" class="wrapper">
+
+
+      <!-- server response -->
+      <div id="server_response">
+        <label>:</label>
+        <span>Server Response:</span>
+      </div>
+
+
+      <!-- transaction form -->
+      <form method="post" action="" id="transactionform" class='leftBox'>
+        <legend>
+          <h2>New Transaction</h2>
+        </legend>
+        <div>
+        <label for="sender">Sender:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <select id="sender-dropdown" name="sender" class="walletDropdown"></select>
+        </div>
+        <fieldset>
+          <label for="password">Password:</label>
+          <input type="text" name="password"/>
+        </fieldset>
+        <div>
+        <label for="receiver">Receiver:&nbsp;&nbsp;&nbsp;</label>
+        <select id="receiver-dropdown" name="receiver" class="walletDropdown"></select>
+        </div>
+        <fieldset>
+          <label for="value">Value:</label>
+          <input type="text" name="value"/>
+        </fieldset>
+        <fieldset>
+          <label for="fee">Fee:</label>
+          <input type="text" name="fee"/>
+        </fieldset>
+        <fieldset>
+          <input type="submit" class="button"/>
+        </fieldset>
+
+      </form>  
+
+
+      <!-- Mine form -->
+      <form method="post" action="" id="mineform" class='leftBox'>
+        <legend>
+          <h2>Mine Block</h2>
+        </legend>
+        <div>
+          <label for="miner">Miner:</label>
+          <select id="miner-dropdown" name="miner" class="walletDropdown"></select>
+        </div>
+        <fieldset>
+          <input type="submit" class="button"/>
+        </fieldset>
+      </form>  
+
+
+      <!-- registration form -->
+      <form method="post" action="" id="walletform" class='leftBox'>
+        <legend>
+          <h2>New Wallet</h2>
+        </legend>
+        <fieldset>
+          <label for="name">Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+          <input type="text" name="name"/>
+        </fieldset>
+        <fieldset>
+          <label for="password">Password:</label>
+          <input type="text" name="password"/>
+        </fieldset>
+        <fieldset>
+          <input type="submit" class="button"/>
+        </fieldset>
+      </form>  
+
+
+      <!-- Balance form -->
+      <form method="post" action="" id="balanceform" class='leftBox'>
+        <legend>
+          <h2>Wallet Balances</h2>
+        </legend>
+        <table id="balanceTable"></table>
+        <!-- 
+        <fieldset>
+          <input type="submit" class="button" value="Gen random trans"/>
+        </fieldset>
+        -->
+      </form>  
+
+
+      <!-- who is form -->
+      <form method="post" action="" id="whoIsForm" class='leftBox'>
+        <legend>
+          <h2>Name from Key</h2>
+        </legend>
+        <fieldset>
+          <label for="Key">Key:&nbsp;</label>
+          <input type="text" name="Key"/>
+        </fieldset>
+        <fieldset>
+          <input type="submit" class="button"/>
+        </fieldset>
+      </form>  
+
+
+      <!-- Genesis
+        In the event that staff can't go to the bathroom while the
+        owner has a spaceship, press button to reset global currency.
+       -->
+      <form method="post" action="" id="Genesis" class='leftBox'>
+        <fieldset>
+          <label></label>
+          <input type="submit" class="button" value="The Bezos Button"/>
+        </fieldset>
+      </form>  
+
+
+    <!-- Statement -->
+    <form method="post" action="" id="Statement" class='leftBox'>
+      <fieldset>
+        <label></label>
+        <input type="submit" class="button" value="Statement"/>
+      </fieldset>
+    </form>  
+
+    </div>
+
+
+    <!-- right wrapper -->
+    <div id="rightWrapper" class="wrapper">
+      
+
+
+      <!-- mempool display -->
+      <form method="post" action="" id="mempoolform">
+        <div>
+          <legend>
+            <h2 id="memTableHeader"></h2>
+          </legend>
+          <table id="memTable"></table>
+        </div>
+      </form> 
+
+      
+      <!-- blockHistory display -->
+      <form method="post" action="" id="blockHistory">
+        <div>
+          <legend>
+            <h2 id="blockHistoryTableHeader"></h2>
+          </legend>
+          <table id="blockHistoryTable"></table>
+        </div>
+      </form> 
+      
+
+      <!-- transactionExplorer -->
+      <form action="" id="transactionExplorer">
+        <div>
+          <legend>
+            <h2>Transaction Data</h2>
+          </legend>
+          <table id="transactionExplorerTable"></table>
+        </div>
+      </form> 
+
+
+      <!-- Block Explorer form -->
+      <form method="post" action="" id="blockexplorerform">
+        <legend>
+          <h2>Block Explorer</h2>
+        </legend>
+        <table id="blockExplorerTable"></table>
+      </div>
+    </form> 
+
+    </div>
+  </div>
+</body>
+</html>

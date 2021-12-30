@@ -1,0 +1,178 @@
+/* body font settings */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: normal;
+  line-height: 1.5;
+  font-size: 16px;
+  color: #000;
+  background-color: #000201c5;
+}
+
+h2 {
+    font-size: 130%;
+}
+
+
+/* wrapper */
+
+.wrapper {
+  /*margin: 0 auto; */
+  float: left;
+  border: 1px solid #000;
+  border-radius: 10px;
+  padding: 1%;
+  overflow: auto;
+  background-color: #570f0f93;
+}
+.wrapper fieldset label {
+  margin-right: 20px;   
+  width: 60px;
+  display: inline-block;
+}
+.wrapper fieldset input[type="text"] {
+  width: 93px;
+  background-color: gray;
+}
+#wrapper {
+  
+  width: 1050px;
+}
+/* leftwrapper */
+#leftWrapper {
+  width: 270px;
+}
+/* rightWrapper */
+#rightWrapper {
+  width: 67%;
+}
+
+
+
+.leftBox {
+  float: left;
+  width: 96%;
+  min-width: 110px;
+
+  /*min-height: 150px;*/
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0.6%;
+  background-color: #740415af;
+  margin: 0.3%;
+}
+.walletDropdown {
+  background-color: gray;
+}
+
+#walletform {
+  background-color: rgb(43, 75, 167);
+}
+#balanceform {
+  background-color: rgb(43, 75, 167);
+  min-height: 120px;
+}
+#whoIsForm {
+  background-color: rgb(43, 75, 167);
+}
+#Genesis {
+  background-color: rgb(78, 77, 22);
+}
+#Statement {
+  background-color: rgb(78, 77, 22);
+}
+
+/* mempoolform   (not a form)  */
+#mempoolform {
+  float: left;
+  width: 47.5%;
+  height: 180px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0.6%;
+  background-color: #10521ea2;
+  margin: 0.3%;
+  overflow: auto;
+}
+#mempoolform p {
+  cursor: pointer;
+}
+
+/* block history explorer   */
+#blockHistory {
+  float: left;
+  width: 47.5%;
+  height: 180px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0.6%;
+  background-color: #10521ea2;
+  margin: 0.3%;
+  overflow: auto;
+}
+#blockHistory p {
+  cursor: pointer;
+}
+
+.highLightedText {
+  color: rgb(207, 5, 5);
+}
+
+
+/* transaction explorer   */
+#transactionExplorer {
+  float: left;
+  width: 97%;
+  min-width: 200px;
+  min-height: 230px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0.6%;
+  background-color: #5e144ba8;
+  margin: 0.3%;
+}
+
+/* block explorer form */
+#blockexplorerform {
+  float: left;
+  width: 97%;
+  min-width: 200px;
+  min-height: 325px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0.6%;
+  background-color: #5e144ba8;
+  margin: 0.3%;
+}
+#blockexplorerform p {
+  cursor: pointer;
+}
+
+
+/* form submit and reset buttons */
+.button {
+  margin: 10px 10px 0 0;
+  font-size: 16px;
+  background-color: rgba(238, 104, 104, 0.582);
+
+}
+
+
+
+/* server_response */
+#server_response {
+  width: 96%;
+  height: 50px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 1%;
+  margin: 0.3%;
+}
+.success {
+  background-color: green;
+  transition: background-color 1s;
+}
+.error {
+  transition: background-color 1s;
+  background-color: red;
+}
+
