@@ -41,7 +41,7 @@ function getBalance($publicKey){
 
     $atLeastTenBlocks++;
     $youngestBlock = array_pop($blockArr);
-    $transArr = $youngestBlock['Transaction Data'];
+    $transArr = $youngestBlock['TransactionData'];
     if (!empty($transArr)){
 
       foreach($transArr as $obj => $key) {
@@ -81,7 +81,6 @@ function generateStatement() {
   }
 
   $blockArr = json_decode(file_get_contents('blockChain.json'), true);
-
 
 
   foreach($walletKeyList as $i => $walletKey) {

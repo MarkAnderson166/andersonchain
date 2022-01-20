@@ -60,6 +60,16 @@ h2 {
   background-color: #740415af;
   margin: 0.3%;
 }
+.leftBoxThird {
+  float: left;
+  width: 29%;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0.6%;
+  background-color: #740415af;
+  margin: 0.3%;
+}
+
 .walletDropdown {
   background-color: gray;
 }

@@ -10,7 +10,6 @@ $(function() {
 // send POST request with all form data
 function sendtransactionRequest() {
   remove_msg();
-  
   $.ajax({
     url: newTransactionUrl,
     method: 'POST',
@@ -90,7 +89,7 @@ function populateTransDetails(transHash) {
     $.getJSON(blockChainurl, function (data) {
       $.each(data.reverse(), function (index, entry) {
         $.each(entry, function (key, trans) {
-          if ( key === 'Transaction Data' ) {  
+          if ( key === 'TransactionData' ) {  
             $.each(trans, function (a, b){ 
               if (b['Hash'] === transHash){
                 $.each(b,function(i,j){

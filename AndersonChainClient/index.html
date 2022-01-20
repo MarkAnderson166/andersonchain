@@ -68,18 +68,20 @@
       </form>  
 
 
-      <!-- Mine form -->
-      <form method="post" action="" id="mineform" class='leftBox'>
+      <!-- Server Select form -->
+      <form method="post" action="" id="serverSelect" class='leftBox'>
         <legend>
-          <h2>Mine Block</h2>
+          <h2 id="serverSelectorHeader">Select Server: </h2>
         </legend>
-        <div>
-          <label for="miner">Miner:</label>
-          <select id="miner-dropdown" name="miner" class="walletDropdown"></select>
-        </div>
-        <fieldset>
-          <input type="submit" class="button"/>
-        </fieldset>
+      </form>  
+      <form method="post" action="" id="serverSelect1" class='leftBoxThird'>
+        <input type="submit" name="turing1" value="Turing1" class="button"/>
+      </form>  
+      <form method="post" action="" id="serverSelect2" class='leftBoxThird'>
+        <input type="submit" name="turing2" value="Turing2" class="button"/>
+      </form>  
+      <form method="post" action="" id="serverSelect3" class='leftBoxThird'>
+        <input type="submit" name="turing3" value="Turing3" class="button"/>
       </form>  
 
 
@@ -108,11 +110,11 @@
           <h2>Wallet Balances</h2>
         </legend>
         <table id="balanceTable"></table>
-        <!-- 
+         
         <fieldset>
-          <input type="submit" class="button" value="Gen random trans"/>
+          <input type="submit" class="button" value="dump test"/>
         </fieldset>
-        -->
+        
       </form>  
 
 

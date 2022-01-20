@@ -1,10 +1,13 @@
 
-var serverUrl = "https://turing.une.edu.au/~mander53/AndersonChainServer/"
+var serverUrl = "https://turing.une.edu.au/~mander53/turing1/"
+var serverUrl = "https://turing.une.edu.au/~mander53/turing2/"
+var serverUrl = "https://turing.une.edu.au/~mander53/turing3/"
 //var serverUrl = "http://localhost/AndersonChainServer/"
+
 
 var newWalletUrl =      serverUrl+"wallet.php";
 var newTransactionUrl = serverUrl+"transaction.php";
-var newBlockUrl =       serverUrl+"block.php";
+//var newBlockUrl =       serverUrl+"block.php";
 var genesisUrl =        serverUrl+"genesis.php";
 var statementUrl =      serverUrl+"statement.php";
 var checkForUpdatesUrl= serverUrl+"checkForUpdates.php";
@@ -17,6 +20,7 @@ var blockChainurl =     serverUrl+"getBlockChain.php";
 
 
 window.onload = function() {
+  selectServer(1);
   populateDropdowns();
   populateMempool();
   populateBlockHistory();
@@ -29,8 +33,12 @@ window.onload = function() {
 $(function() { setInterval(checkForUpdates, 1800); });
 
 // reminder, change server update interval if you chance this.
-    $(function() { setInterval(genTestTrans, 6000); });
-    $(function() { setInterval(genTestMine, 40000); });
+
+  $(function() { setInterval(genTestTrans, 3000); });
+  $(function() { setInterval(genTestTrans, 3000); });
+  $(function() { setInterval(genTestTrans, 3000); });
+
+  $(function() { setInterval(startMining, 20000); });
 
 
 
@@ -48,41 +56,47 @@ function checkForUpdates(){
     },
   });
 }
-  // ^ above way uses less bandwidth, the actual checking is done server end.
-  // v below way or something like it might be used if I completely seperate 
-  //      wallet, client and miner into different websites.
-  /*
-  $.ajax(serverUrl+"walletDB.json", {
-    type: 'HEAD',
-    dataType: 'jsonp',
-    success: function(d,r,xhr) {
-      var oldWalletFileSize = walletFileSize;
-      walletFileSize = xhr.getResponseHeader('Content-Length');
-      if (oldWalletFileSize !== walletFileSize) {populateDropdowns();}
-    }
+
+
+//    Server selector
+//  notes...........
+
+$(function() {
+  $('#serverSelect1').submit(function(e) {
+    e.preventDefault();
+    selectServer(1);
   });
-  $.ajax(serverUrl+"transactionDB.json", {
-    type: 'HEAD',
-    dataType: 'jsonp',
-    success: function(d,r,xhr) {
-      var oldTransFileSize = transFileSize;
-      transFileSize = xhr.getResponseHeader('Content-Length');
-      if (oldTransFileSize !== transFileSize) {
-        populateMempool();
-        getAllBalances();
-      }
-    }
+});
+$(function() {
+  $('#serverSelect2').submit(function(e) {
+    e.preventDefault();
+    selectServer(2);
   });
-  $.ajax(serverUrl+"blockChain.json", {
-    type: 'HEAD',
-    dataType: 'jsonp',
-    success: function(d,r,xhr) {
-      var oldblockChainFileSize = blockChainFileSize;
-      blockChainFileSize = xhr.getResponseHeader('Content-Length');
-      if (oldblockChainFileSize !== blockChainFileSize){populateBlockHistory();}
-    }
+});
+$(function() {
+  $('#serverSelect3').submit(function(e) {
+    e.preventDefault();
+    selectServer(3);
   });
-  */
+});
+
+function selectServer(choice) {
+  serverUrl = "https://turing.une.edu.au/~mander53/turing"+choice+"/"
+  newWalletUrl =      serverUrl+"wallet.php";
+  newTransactionUrl = serverUrl+"transaction.php";
+  genesisUrl =        serverUrl+"genesis.php";
+  statementUrl =      serverUrl+"statement.php";
+  checkForUpdatesUrl= serverUrl+"checkForUpdates.php";
+  walletDBurl =       serverUrl+"getWalletDB.php";
+  transactionDBurl =  serverUrl+"getTransactionDB.php";
+  getBalanceUrl =     serverUrl+"getBalance.php";
+  blockChainurl =     serverUrl+"getBlockChain.php";
+
+  populateMempool();
+  populateBlockHistory();
+  $('#serverSelectorHeader').empty();
+  $('#serverSelectorHeader').append(('Selected Server: Turing'+choice));
+}
 
 
 //      populateDropdowns()
@@ -103,16 +117,6 @@ function populateDropdowns() {
       })
     },
   });
-
-        //jquery got weird cors errors with firefox/linux?
-/*
-  $.getJSON(walletDBurl, function(data) {
-    $.each(data, function (key, entry) {
-      let formattedString = entry.walletIndex+' : '+entry.name;
-      $('.walletDropdown').append(new Option(formattedString, entry.publicKey));
-    })
-  });
-  */
 }
 
 
@@ -120,7 +124,6 @@ function populateDropdowns() {
 // remove messages / colors displayed in the server response box
 
 function remove_msg() {
-    // This is from the cosc260 A3 starter code, by james bishop
   var $server_response = $('#server_response');
   if ($server_response.hasClass('fade')) {
     $server_response.removeClass('fade');
@@ -140,12 +143,8 @@ function remove_msg() {
 
 
 
-
-
-
-
 // ----- Functions for Testing only ---------  
-
+// ===========================================================================
 
 //    generateStatement()
 // dumps a text file per wallet to server containing every transaction.
@@ -235,12 +234,6 @@ function genesisBlock(){
 //   generates a random transaction with a button or timer
 //  (assuming everyones password is 'password')
 
-$(function() {
-  $('#balanceform').submit(function(e) {
-    e.preventDefault();
-    genTestTrans();
-  });
-});
 
 function genTestTrans() {
   remove_msg();
@@ -261,7 +254,7 @@ function genTestTrans() {
     $value    =  Math.floor(Math.random() * 10)+10;
 
     $.ajax({
-      url: newTransactionUrl,
+      url: "https://turing.une.edu.au/~mander53/turing"+(Math.floor(Math.random()* 3)+1)+"/transaction.php", //  newTransactionUrl,
       method: 'POST',
       data: 'sender='+$sender+'&password=password&receiver='+$receiver+'&value='+$value+'&fee='+$value/100,
       dataType: 'json',
@@ -287,44 +280,26 @@ function genTestTrans() {
 }
 
 
-//         genTestMine() 
-//   this just mines a block with a button or timer
-//      -random miner selected
 
-function genTestMine() {
-  remove_msg();
+$(function() {
+  $('#balanceform').submit(function(e) {
+    e.preventDefault();
+    startMining();
+    //dumptest();
+  });
+});
+
+function dumptest() {
+  $.ajax({
+    url: serverUrl+"dumper.php",
+    method: 'POST',
+    data: '{"Hash":"000000000000000000","Miner":"$miner","Index":0,"Previous Hash":"$previousHash","Difficulty":0,"Coinbase":0,"Timestamp":1642159656.913401,"Fees":0,"Transaction Data":[],"Transaction Hashes":[]}',
+    dataType: 'json',
+    success: function(data) {
+
+      $('#server_response').addClass('success fade');
+      $('#server_response span').text('I did a thing!')
   
-  let $publicKeys = []
-  $.getJSON(walletDBurl, function(data) {
-    $.each(data, function (key, entry) {
-      $publicKeys.push(entry.publicKey);
-    })
-
-    $miner = $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-    
-    $.ajax({
-      url: newBlockUrl,
-      method: 'POST',
-      data: 'miner='+$miner,
-      dataType: 'json',
-      success: function(data) {
-
-        $('#server_response').addClass('success');
-        $('#server_response span').text(data);
-        populateBlockHistory();
-        populateMempool();
-      },
-      error: function(jqXHR) {
-        try {
-          var $e = JSON.parse(jqXHR.responseText);
-          // display error 
-          $('#server_response').addClass('error');
-          $('#server_response span').text('Error from server: ' +$e.error);
-        }
-        catch (error) {
-          console.log('Could not parse JSON error message: ' +error);
-        }
-      }
-    });
+    },
   });
 }

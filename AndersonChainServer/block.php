@@ -23,20 +23,28 @@ require_once('helperFunctions.php');
 #                         -not this miners problem, going back in the pool
 /*===========================================================================*/
 
-$json = file_get_contents('blockChain.json');
-$blocksJsonData = json_decode($json, true);
+//--------------------------------------------------------------------------
+  // ========   get basics together =============
+//--------------------------------------------------------------------------
 
-  // ensure POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $miner =        $_POST['miner'];
+
+  $json = file_get_contents('blockChain.json');
+  $blocksJsonData = json_decode($json, true);
   $index =        count($blocksJsonData);
+  
+    // ask other nodes if they already have a block with the index we
+    // are about to mine, if they do, request it be sent to our catchblock.php
+    // do this in a loop until all nodes are trying to mine the same index
+  checkChainSync($_POST['miner'],$index);
+  
+  $miner = file_get_contents('serverID');
+
   $previousHash = $blocksJsonData[$index-1]['Hash'];
-  $leadingZeros = 0;
+  $nonce        = 0;
   $coinbase =     100;
   $timestamp =    microtime(true);
   $fees   =       0;
-  //$transactionData = ;
-  //$transactionHashes = ;
 
 
     // coinbase halving based on chain length instead of blocks/time for now.
@@ -47,6 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
 //--------------------------------------------------------------------------
+  // ========   collect tranactions to mine   =============
+//--------------------------------------------------------------------------
+
+
+// this was written in a way to allow selection of trans to be
+// based on fee size,  However, there's simply no reason to not mine
+// everything everytime. -the functionalty remains, but does nothing.
 
     // load all trans data
   $json = file_get_contents('transactionDB.json');
@@ -55,25 +70,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $selectedTrans = (array) null;
   $finalTransList = (array) null;
 
-  // TODO: the whole 'which trans will go in this block' idea needs work,
-  // old trans need to be deleted and stakeholders notified somehow.
-  //    for now, this freaks out if the pool has less than 2 USEABLE trans
-  //    - trans with insufficent marks, or with sender==receiver
-  //      will stay in pool forever
-
   // sorts by fee amount, to cherry pick most profitable trans to mine.
-  if (!empty($transactionData)){
+/*  if (!empty($transactionData)){
     usort($transactionData, function($a, $b) {
       return $a['Fee'] < $b['Fee'];
     });
   }
-  $transCounter = 0;
+  $transCounter = 0; */
   foreach($transactionData as $obj => $key) {
-    $transCounter++;
+    //$transCounter++;
        
-      // at this point we're picking an arbitary amount of trans, and throwing 
-      // out trans where sender=receiver, you can't send marks to yourself
-    if(($transCounter < count($transactionData)-1) &&
+      // discard where sender=receiver, you can't send marks to yourself
+    if( //($transCounter < count($transactionData)) &&
             ($key['Sender'] != $key['Receiver'])){
                        
         //trans to be included in block:
@@ -85,9 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
 //--------------------------------------------------------------------------
+  // ========   varify transactions, put block together   =============
+//--------------------------------------------------------------------------
 
-// after selecting by fee, all operations will be based on timestamp, so re-sort
-
+    // all operations after this will be based on timestamp
   if (!empty($selectedTrans)){
     usort($selectedTrans, function($a, $b) {
       return $a['Timestamp'] > $b['Timestamp'];
@@ -131,14 +140,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
     // the miner receives the mining rewards as a transaction, which is 
-    // made at the time on mining., trans must be made after fee calculation.
+    // made at the time of mining., trans must be made after fee calculation.
   $coinbaseTimestamp = microtime(true);
   $coinbaseTransHash = hash('sha256','Mining_Reward'.$miner.$coinbase.'0'.$coinbaseTimestamp);
   $minerBalance = balanceFromArrayThenChain($miner, $finalTransList) + $coinbase +$fees;
 
   $finalTransList[] = ['Hash'   => $coinbaseTransHash,
-                      'Sender' => 'Mining_Reward__this_needs_to_be_64_characters_loong_for_indexing',
-                      'Sender Balance' => 123456789, // nothing should EVER use this number
+                      'Sender' => 'Mining_Reward',
+                      'Sender Balance' => 0,
                       'Receiver' => $miner,
                       'Receiver Balance' => $minerBalance,
                       'Value' => $coinbase +$fees,
@@ -151,48 +160,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   foreach($finalTransList as $obj => $key) {
     $includedTransactionHashes[] = $key['Hash'];
   }
-//--------------------------------------------------------------------------
-
 
     // put unused trans back in the mempool
   file_put_contents('transactionDB.json', json_encode($ignoredTrans));
 
-  // TODO: entire difficulty/0's and reset functionality
-
-  // TODO: chain integrity check (re-hash)
-
 
 //--------------------------------------------------------------------------
-    // put the block together, write the json, report to client.
-  $hash = hash('sha256', $miner.$index.$timestamp);
-  $blocksJsonData[] =['Hash' => $hash,
+  // ======  Mine block and broadcast it to all other nodes  ==========
+//--------------------------------------------------------------------------
+
+    // this while loop is a fully working 'proof-of-work' hashing system
+    // it just has the difficulty set extremely low,
+    // we don't need to pointlessly burn power for this assesment.
+
+  $hash = 'a';
+    // sleep() is to account for ajax ping (only needed for exessively easy 0's)
+    // I'll explain this in the readme.md
+  sleep(1);
+  while ( substr($hash,0,4) !== '0000' && getChainLength() === $index){
+    $nonce++;
+    $hash = hash('sha256',$nonce.$miner.$index.$previousHash.$timestamp.json_encode($finalTransList));
+  }
+
+
+  $newBlock = array(  'Hash' => $hash,
                       'Miner' => $miner,
                       'Index' => $index,
-                      'Previous Hash' => $previousHash,
-                      'Difficulty' => $leadingZeros,
+                      'PreviousHash' => $previousHash,
+                      'Nonce' => $nonce,
                       'Coinbase' => $coinbase,
                       'Timestamp' => $timestamp, 
                       'Fees' => $fees, 
-                      'Transaction Data' => $finalTransList,
-                      'Transaction Hashes' => $includedTransactionHashes ];
+                      'TransactionData' => $finalTransList,
+                      'TransactionHashes' => $includedTransactionHashes  );
 
-  file_put_contents('blockChain.json', json_encode($blocksJsonData));
-  echo json_encode('New block mined by: '.$miner);
+    //  if our chain length has changed while we were mining, don't bother
+    //  broadcasting, we lost the race, no one wants our block.
+              // RECYCLING IS AFTER BROADCAST !!!!  -  OPTIMISE LATER
+  //if ( getChainLength() === $index ){
+    broadcastBlock($newBlock);
+    echo json_encode('New block mined by: '.$miner);
+  //}
 }
 
+
 //--------------------------------------------------------------------------
-  // 405: unsupported request method
+//--------------------------------------------------------------------------
 else {
     error(405, 'POST requests only');
 }
 
 
 
-
 function balanceFromArrayThenChain($key, $array) {
 
   if (!empty($array)){
-
     foreach(array_reverse($array) as $a => $b) {
       if ($key === $b['Sender']){
         return floatval($b['Sender Balance']);
@@ -204,10 +226,54 @@ function balanceFromArrayThenChain($key, $array) {
   }
     // if we get though the current selected list, and haven't got a
     // balance yet, dig into the blockchain for it
-  //else {
-    return floatval(getBalance($key));
-  //}
+  return floatval(getBalance($key));
+}
 
-  // the above '}else{}' cost me about 20 hours of bug hunting...... ouch
-  //return 2222222222; //obvious number
+
+function broadcastBlock($newBlock){
+
+  for ( $i = 1 ; $i <= 3; $i++){
+    $url = 'https://turing.une.edu.au/~mander53/turing'.$i.'/catchblock.php';
+    $result = httpPost($url, $newBlock);
+  }
+
+  if ($result === FALSE) { /* Handle error */ }
+}
+
+
+/* ==========  httpPost() ==============
+  ripped off verbatum from stack-overflow user Dima L.
+  https://stackoverflow.com/questions/5647461/how-do-i-send-a-post-request-with-php
+  I was using a file_get_contents($url, false, stream_context_create());
+  method, but had trouble with return values, so this Curl thing from stack
+  worked better.
+*/
+function httpPost($url, $data)
+{
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+
+
+function checkChainSync($server, $index) {
+  $result = 'not 3';
+  while (strlen($result) !== 3){ 
+    for ( $i = 1 ; $i <= 3; $i++){
+      $url = 'https://turing.une.edu.au/~mander53/turing'.$i.'/requestblock.php';
+      $result = httpPost($url, array( 'server' => $server, 'Index' => $index));
+    }
+    $index++;
+  }
+}
+
+
+function getChainLength() {
+  $json = file_get_contents('blockChain.json');
+  $blocksJsonData = json_decode($json, true);
+  return count($blocksJsonData);
 }

@@ -1,11 +1,6 @@
 
-$(function() {
-  $('#mineform').submit(function(e) {
-    e.preventDefault();
-    sendMineRequest();
-  });
-});
 
+/*
 // send POST request with all form data
 function sendMineRequest() {
   remove_msg();
@@ -35,7 +30,31 @@ function sendMineRequest() {
     }
   });
 }
+*/
 
+//         startMining() 
+//   tell all servers to mine  (starts the race)
+//  they DO NOT run constantly, they periodically get this 'start signal'
+
+function startMining() {
+  remove_msg();
+  
+  for ( var i = 1; i <=3; i++) {
+    $.ajax({  
+      url: "https://turing.une.edu.au/~mander53/turing"+i+"/block.php",
+      method: 'POST',
+      data: 'miner='+i,
+      dataType: 'json',
+      async: true,
+      success: function(data) {
+        $('#server_response').addClass('success');
+        $('#server_response span').text(data);
+        populateBlockHistory();
+        populateMempool();
+      }
+    });
+  }  
+}
 
 
 function populateBlockHistory() {
@@ -71,7 +90,7 @@ function populateBlockExplorer(transHash) {
       if ( entry.Hash === transHash ) {
         let strArg = '';
         $.each(entry,function(key,value){
-          if (key !== 'Transaction Data' && key !== 'Transaction Hashes' ) {
+          if (key !== 'TransactionData' && key !== 'TransactionHashes' ) {
             strArg += key+': '+value+'<pre>';
           }
         })
@@ -83,7 +102,7 @@ function populateBlockExplorer(transHash) {
     $.each(data, function (key, entry) {
       if ( entry.Hash === transHash ) {
         $.each(entry,function(key,value){
-          if (key == 'Transaction Hashes') {
+          if (key == 'TransactionHashes') {
             let clickableTrans = ''
             $.each(value, function (a, transHash) {
               clickableTrans += '<p id="'+transHash+'">'+transHash+

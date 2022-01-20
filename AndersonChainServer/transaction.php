@@ -20,12 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $receiver =  $_POST['receiver'];
   $value =     $_POST['value'];
   $fee   =     $_POST['fee'];
-  $timestamp = microtime(true);
+  if ( !isset( $_POST['Timestamp'] ) ){ $timestamp = microtime(true); }
+
+
 
 
     //  TODO: Password validation can't use wallet database
     // ( because there shouldn't be a wallet database - its for testing only )
-  $json = file_get_contents('walletDB.json');
+/*  $json = file_get_contents('walletDB.json');
   $walletJsonData = json_decode($json, true);
   foreach($walletJsonData as $obj => $key) {
     if ( $key['publicKey'] === $sender) {
@@ -34,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
   }
-
+*/
 
   $json = file_get_contents('transactionDB.json');
   $transJsonData = json_decode($json, true);
@@ -51,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   echo json_encode('Tranaction added');
 }
-  // 405: unsupported request method
+
+
 else {
     error(405, 'POST requests only');
 }
