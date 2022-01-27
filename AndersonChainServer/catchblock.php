@@ -59,10 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'Timestamp' => $obj['Timestamp'] ];
       }
 
-      $dumped = file_get_contents('dump.json');
-      $str = $dumped.'  trans of value: '.$obj['Value'].' being recycled || ';
-      file_put_contents('dump.json', $str);
-
     }
     file_put_contents('transactionDB.json', json_encode($transJsonData));
   }

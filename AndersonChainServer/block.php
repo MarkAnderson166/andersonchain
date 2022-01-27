@@ -33,19 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $blocksJsonData = json_decode($json, true);
   $index =        count($blocksJsonData);
   
-    // ask other nodes if they already have a block with the index we
-    // are about to mine, if they do, request it be sent to our catchblock.php
-    // do this in a loop until all nodes are trying to mine the same index
+  rehash($blocksJsonData);
   checkChainSync($_POST['miner'],$index);
   
-  $miner = file_get_contents('serverID');
-
+  $miner        = file_get_contents('serverID');
   $previousHash = $blocksJsonData[$index-1]['Hash'];
   $nonce        = 0;
-  $coinbase =     100;
-  $timestamp =    microtime(true);
-  $fees   =       0;
-
+  $coinbase     = 100;
+  $timestamp    = microtime(true);
+  $fees         = 0;
 
     // coinbase halving based on chain length instead of blocks/time for now.
   foreach($blocksJsonData as $obj => $key) {
@@ -58,10 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // ========   collect tranactions to mine   =============
 //--------------------------------------------------------------------------
 
-
-// this was written in a way to allow selection of trans to be
-// based on fee size,  However, there's simply no reason to not mine
-// everything everytime. -the functionalty remains, but does nothing.
+    // this was written in a way to allow selection of trans to be
+    // based on fee size,  However, there's simply no reason to not mine
+    // everything everytime. -the functionalty is just commented out for now.
 
     // load all trans data
   $json = file_get_contents('transactionDB.json');
@@ -142,16 +137,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // the miner receives the mining rewards as a transaction, which is 
     // made at the time of mining., trans must be made after fee calculation.
   $coinbaseTimestamp = microtime(true);
+  $hash = hash('sha256', $sender.$receiver.$value.$fee.$timestamp);
+
   $coinbaseTransHash = hash('sha256','Mining_Reward'.$miner.$coinbase.'0'.$coinbaseTimestamp);
   $minerBalance = balanceFromArrayThenChain($miner, $finalTransList) + $coinbase +$fees;
 
   $finalTransList[] = ['Hash'   => $coinbaseTransHash,
                       'Sender' => 'Mining_Reward',
-                      'Sender Balance' => 0,
+                      'Sender Balance' => strval(0),
                       'Receiver' => $miner,
-                      'Receiver Balance' => $minerBalance,
-                      'Value' => $coinbase +$fees,
-                      'Fee' => 0,
+                      'Receiver Balance' => strval($minerBalance),
+                      'Value' => strval($coinbase +$fees),
+                      'Fee' => strval(0),
                       'Timestamp' => $coinbaseTimestamp ];
 
 
@@ -170,18 +167,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //--------------------------------------------------------------------------
 
     // this while loop is a fully working 'proof-of-work' hashing system
-    // it just has the difficulty set extremely low,
+    // it just has the difficulty set extremely low, so its intermittent.
     // we don't need to pointlessly burn power for this assesment.
 
-  $hash = 'a';
     // sleep() is to account for ajax ping (only needed for exessively easy 0's)
     // I'll explain this in the readme.md
   sleep(1);
-  while ( substr($hash,0,4) !== '0000' && getChainLength() === $index){
-    $nonce++;
-    $hash = hash('sha256',$nonce.$miner.$index.$previousHash.$timestamp.json_encode($finalTransList));
-  }
+  $hash = 'a';
 
+  $dataStr = '';
+  foreach( $finalTransList as $ind => $obj) {
+    foreach( $obj as $key => $value) {
+      $dataStr = $dataStr.$value;
+    }
+  }
+  
+  while ( substr($hash,0,4) !== '0000' ){ // && getChainLength() === $index){
+    $nonce++;
+    $hash = hash('sha256',$nonce.$miner.$index.$previousHash.$timestamp.$dataStr);
+  }
 
   $newBlock = array(  'Hash' => $hash,
                       'Miner' => $miner,
@@ -248,8 +252,7 @@ function broadcastBlock($newBlock){
   method, but had trouble with return values, so this Curl thing from stack
   worked better.
 */
-function httpPost($url, $data)
-{
+function httpPost($url, $data) {
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_POST, true);
     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
@@ -259,7 +262,11 @@ function httpPost($url, $data)
     return $response;
 }
 
-
+/* ==========  checkChainSync() ==============
+    ask other nodes if they already have a block with the index we
+    are about to mine, if they do, request it be sent to our catchblock.php
+    do this in a loop until all nodes are trying to mine the same index
+*/
 function checkChainSync($server, $index) {
   $result = 'not 3';
   while (strlen($result) !== 3){ 
@@ -271,9 +278,50 @@ function checkChainSync($server, $index) {
   }
 }
 
+/* ==========  rehash() ==============
+  Go though chain rehashing blocks to check for changes. If any hash
+  doesn't match we throw out all blocks after that point on THIS server.
+   -other functions handle the repair 
+*/
+function rehash($blocksJsonData) {
 
+  $PreviousHash = '$previousHash';
+
+  foreach(array_reverse($blocksJsonData) as $ind => $obj) {
+
+    $hashDataStr = $obj['Nonce'].$obj['Miner'].$obj['Index'].$obj['PreviousHash'].$obj['Timestamp'];
+    foreach( $obj['TransactionData'] as $ind => $obj1) {
+      foreach( $obj1 as $key => $value) {
+        $hashDataStr = $hashDataStr.$value;
+      }
+    }
+    $hash = hash('sha256',$hashDataStr);
+
+    if ( $obj['Hash'] !== $hash) {
+      $dumped = file_get_contents('dump.json');
+      $str = $dumped.' ## ERROR, ERROR WORLD IN CRYSIS! ##  |'.$obj['Index'].'| '.$obj['Hash'].' !== '.$hash;
+      file_put_contents('dump.json', $str);
+
+      scrapBlocks($blocksJsonData, $obj['Index']-1);
+    }
+
+    $PreviousHash = $obj['Hash'];
+  }
+}
+
+function scrapBlocks($blocksJsonData, $brokenBlock){
+  foreach($blocksJsonData as $ind => $obj) {
+    if ($obj['Index'] < $brokenBlock ) {
+      $newChain[] = $obj;
+    }
+  }
+  file_put_contents('blockChain.json', json_encode($newChain));
+}
+
+/*
 function getChainLength() {
   $json = file_get_contents('blockChain.json');
   $blocksJsonData = json_decode($json, true);
   return count($blocksJsonData);
 }
+*/

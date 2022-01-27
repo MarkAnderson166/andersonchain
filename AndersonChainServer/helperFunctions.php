@@ -47,12 +47,12 @@ function getBalance($publicKey){
       foreach($transArr as $obj => $key) {
         if ($publicKey === $key['Sender']){
 
-          $recentTranslist[] = [ 'Timestamp' => $key['Timestamp'],
+          $recentTranslist[] = ['Timestamp'=> $youngestBlock['Index']*1000+$obj,
                                 'Balance' => $key['Sender Balance']];
         }
         else if ($publicKey === $key['Receiver']){
 
-          $recentTranslist[] = [ 'Timestamp' => $key['Timestamp'],
+          $recentTranslist[] = ['Timestamp'=> $youngestBlock['Index']*1000+$obj,
                                 'Balance' => $key['Receiver Balance']];
         } 
       }

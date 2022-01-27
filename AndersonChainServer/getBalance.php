@@ -20,9 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $returnString = '';
   $json = file_get_contents('walletDB.json');
   $walletJsonData = json_decode($json, true);
+  $Total = 0;
   foreach($walletJsonData as $obj => $key) {
-    $returnString = $returnString.getBalance($key['publicKey']).' : '.$key['name'].'<pre>';
+    $bal = getBalance($key['publicKey']);
+    $Total = $Total+$bal;
+    $returnString = $returnString.$bal.' : '.$key['name'].'<pre>';
   }
+  $returnString = $returnString.'Total Marks : '.$Total;
 
   echo json_encode($returnString);
     

@@ -37,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     file_put_contents('walletDB.json', json_encode($data));
 
 
-    $data1[] = [ 'Hash' => '000000000000000000',
+    $data1[] = ['Hash' => '27f7188a70105d726612b23a4d0acf3a2225e21111f3768f0803640c390dd344',
                 'Miner' => '$miner',
                 'Index' => 0, 
                 'PreviousHash' => '$previousHash',
                 'Coinbase' => 0,
-                'Timestamp' => microtime(true), 
+                'Timestamp' => 0,//microtime(true), 
                 'Fees' => 0, 
                 'TransactionData' => [],
                 'TransactionHashes' => [] ];
