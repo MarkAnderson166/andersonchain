@@ -11,13 +11,13 @@ var newTransactionUrl = serverUrl+"transaction.php";
 var genesisUrl =        serverUrl+"genesis.php";
 var statementUrl =      serverUrl+"statement.php";
 var checkForUpdatesUrl= serverUrl+"checkForUpdates.php";
-
 var walletDBurl =       serverUrl+"getWalletDB.php";
 var transactionDBurl =  serverUrl+"getTransactionDB.php";
 var getBalanceUrl =     serverUrl+"getBalance.php";
-
 var blockChainurl =     serverUrl+"getBlockChain.php";
 
+var autoMineToggle = 0;
+var autoTranToggle = 0;
 
 window.onload = function() {
   selectServer(1);
@@ -30,17 +30,9 @@ window.onload = function() {
   $('#blockExplorerTable').append("(click any block hash)");
 };
 
+
 $(function() { setInterval(checkForUpdates, 1800); });
-
 // reminder, change server update interval if you chance this.
-
-  $(function() { setInterval(genTestTrans, 3000); });
-  $(function() { setInterval(genTestTrans, 3000); });
-  $(function() { setInterval(genTestTrans, 3000); });
-
-  $(function() { setInterval(startMining, 20000); });
-
-
 
 function checkForUpdates(){
   $.ajax({
@@ -57,9 +49,45 @@ function checkForUpdates(){
   });
 }
 
+// ----------------    Auto  miner, tranaction generator ----------------------
+$(function() { setInterval(genTestTrans, 2000); });
+$(function() { setInterval(autoMiner, 30000); });
 
-//    Server selector
-//  notes...........
+$(function() {
+  $('#autoFormMine').submit(function(e) {
+    e.preventDefault();
+    if ( autoMineToggle === 0) {
+      autoMineToggle = 1;
+      $('#autoMineState').empty();
+      $('#autoMineState').append(('&nbsp;&nbsp;ON'));
+    }
+    else if ( autoMineToggle === 1) {
+      autoMineToggle = 0;
+      $('#autoMineState').empty();
+      $('#autoMineState').append(('&nbsp;&nbsp;OFF'));
+    }
+  });
+});
+
+$(function() {
+  $('#autoFormTran').submit(function(e) {
+    e.preventDefault();
+    if ( autoTranToggle === 0) {
+      autoTranToggle = 1;
+      $('#autoTranState').empty();
+      $('#autoTranState').append(('&nbsp;&nbsp;ON'));
+    }
+    else if ( autoTranToggle === 1) {
+      autoTranToggle = 0;
+      $('#autoTranState').empty();
+      $('#autoTranState').append(('&nbsp;&nbsp;OFF'));
+    }
+  });
+});
+
+
+// --------------------------------   Server selector    ----------------
+// 
 
 $(function() {
   $('#serverSelect1').submit(function(e) {
@@ -99,7 +127,7 @@ function selectServer(choice) {
 }
 
 
-//      populateDropdowns()
+//  -------------------------   populateDropdowns() ----------------
 //   ease of use GUI element,
 //   needs to change to allow manual key entry after wallet changes
 
@@ -120,7 +148,7 @@ function populateDropdowns() {
 }
 
 
-//      remove_msg()
+//   --------------------------------   remove_msg()  ----------------
 // remove messages / colors displayed in the server response box
 
 function remove_msg() {
@@ -136,7 +164,6 @@ function remove_msg() {
   }
   $('#server_response span').text('');
 }
-
 
 
 
@@ -200,8 +227,9 @@ $(function() {
 
 
 
-//      genesisBlock()      
+//   --------------------------------   genesisBlock()      ----------------
 // clear entire chain, mempool and wallet database (bezos button)
+//   on all 3 servers
 
 $(function() {
   $('#Genesis').submit(function(e) {
@@ -210,96 +238,24 @@ $(function() {
   });
 });
 
-function genesisBlock(){  
-  $.ajax({
-    url: genesisUrl,
-    method: 'POST',
-    data: '',
-    dataType: 'json',
-    success: function(data) {
-      if(data > 0){
-        $('#server_response').addClass('success fade');
-        $('#server_response span').text('ran genesis function')
-        populateDropdowns();
-        populateMempool();
-        populateBlockHistory();
-        getAllBalances();
-      } 
-    },
-  });
-}
-
-
-//      genTestTrans()
-//   generates a random transaction with a button or timer
-//  (assuming everyones password is 'password')
-
-
-function genTestTrans() {
-  remove_msg();
-
-  let $publicKeys = []
-  $.getJSON(walletDBurl, function(data) {
-    $.each(data, function (key, entry) {
-      $publicKeys.push(entry.publicKey);
-    })
-
-    $sender   =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-    $receiver =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-      // careful, this while loop will do nasty things
-      // if the genesis block ever starts with < 2 wallets
-    while ($receiver == $sender){
-      $receiver = $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-    }
-    $value    =  Math.floor(Math.random() * 10)+10;
-
+function genesisBlock(){ 
+  
+  for ( var i = 1; i <=3; i++) {
     $.ajax({
-      url: "https://turing.une.edu.au/~mander53/turing"+(Math.floor(Math.random()* 3)+1)+"/transaction.php", //  newTransactionUrl,
+      url: "https://turing.une.edu.au/~mander53/turing"+i+"/genesis.php",
       method: 'POST',
-      data: 'sender='+$sender+'&password=password&receiver='+$receiver+'&value='+$value+'&fee='+$value/100,
+      data: '',
       dataType: 'json',
       success: function(data) {
-
-        $('#server_response').addClass('success');
-        $('#server_response span').text('Test transaction added');
-        populateMempool();
+        if(data > 0){
+          $('#server_response').addClass('success fade');
+          $('#server_response span').text('ran genesis function')
+          populateDropdowns();
+          populateMempool();
+          populateBlockHistory();
+          getAllBalances();
+        } 
       },
-      error: function(jqXHR) {
-        try {
-          var $e = JSON.parse(jqXHR.responseText);
-          // display error 
-          $('#server_response').addClass('error');
-          $('#server_response span').text('Error from server: ' +$e.error);
-        }
-        catch (error) {
-          console.log('Could not parse JSON error message: ' +error);
-        }
-      }
     });
-  });
-}
-
-
-
-$(function() {
-  $('#balanceform').submit(function(e) {
-    e.preventDefault();
-    startMining();
-    //dumptest();
-  });
-});
-
-function dumptest() {
-  $.ajax({
-    url: serverUrl+"dumper.php",
-    method: 'POST',
-    data: '{"Hash":"000000000000000000","Miner":"$miner","Index":0,"Previous Hash":"$previousHash","Difficulty":0,"Coinbase":0,"Timestamp":1642159656.913401,"Fees":0,"Transaction Data":[],"Transaction Hashes":[]}',
-    dataType: 'json',
-    success: function(data) {
-
-      $('#server_response').addClass('success fade');
-      $('#server_response span').text('I did a thing!')
-  
-    },
-  });
+  }
 }

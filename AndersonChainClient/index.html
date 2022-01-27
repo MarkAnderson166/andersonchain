@@ -75,13 +75,13 @@
         </legend>
       </form>  
       <form method="post" action="" id="serverSelect1" class='leftBoxThird'>
-        <input type="submit" name="turing1" value="Turing1" class="button"/>
+        <input type="submit" value="Turing1" class="buttonWide"/>
       </form>  
       <form method="post" action="" id="serverSelect2" class='leftBoxThird'>
-        <input type="submit" name="turing2" value="Turing2" class="button"/>
+        <input type="submit" value="Turing2" class="buttonWide"/>
       </form>  
       <form method="post" action="" id="serverSelect3" class='leftBoxThird'>
-        <input type="submit" name="turing3" value="Turing3" class="button"/>
+        <input type="submit" value="Turing3" class="buttonWide"/>
       </form>  
 
 
@@ -109,16 +109,12 @@
         <legend>
           <h2>Wallet Balances</h2>
         </legend>
-        <table id="balanceTable"></table>
-         
-        <fieldset>
-          <input type="submit" class="button" value="dump test"/>
-        </fieldset>
-        
+        <table id="balanceTable"></table>  
+        <input type="submit" value="Update" class="button"/>      
       </form>  
 
 
-      <!-- who is form -->
+      <!-- who is form
       <form method="post" action="" id="whoIsForm" class='leftBox'>
         <legend>
           <h2>Name from Key</h2>
@@ -130,36 +126,50 @@
         <fieldset>
           <input type="submit" class="button"/>
         </fieldset>
+      </form>   -->
+
+
+            <!-- Buttons for: DeBug / Testing   -->
+
+      <!-- Auto Miner,  Trans generator  -->
+      <form method="post" action="" id="autoFormMine" >
+        <label for="submit" id="autoMineHeader">Auto Mine: &nbsp;</label>
+        <input type="submit" value="Toggle" class="button"/>
+        <label for="submit" id="autoMineState">&nbsp;&nbsp;OFF</label>
+
+      </form>  
+      <form method="post" action="" id="autoFormTran" >
+        <label for="submit" id="autoTranHeader">Auto Tran: &nbsp;</label>
+        <input type="submit" value="Toggle" class="button"/>
+        <label for="submit" id="autoTranState">&nbsp;&nbsp;OFF</label>
       </form>  
 
-
-      <!-- Genesis
-        In the event that staff can't go to the bathroom while the
-        owner has a spaceship, press button to reset global currency.
-       -->
-      <form method="post" action="" id="Genesis" class='leftBox'>
-        <fieldset>
-          <label></label>
-          <input type="submit" class="button" value="The Bezos Button"/>
-        </fieldset>
+        <!-- Genesis
+          In the event that staff can't go to the bathroom while the
+          owner has a spaceship, press button to reset global currency. -->
+      <form method="post" action="" id="Genesis" class="leftBoxHalf">
+        <input type="submit" class="buttonWide" value="Bezos Button"/>
+      </form>  
+      <form method="post" action="" id="minerForm"  class="leftBoxHalf">
+        <input type="submit" class="buttonWide" value="Mine Block"/>
       </form>  
 
-
-    <!-- Statement -->
+    <!-- Statement 
     <form method="post" action="" id="Statement" class='leftBox'>
       <fieldset>
         <label></label>
         <input type="submit" class="button" value="Statement"/>
       </fieldset>
-    </form>  
+    </form>  -->
 
     </div>
 
 
-    <!-- right wrapper -->
+
+            <!-- right wrapper -->
+
     <div id="rightWrapper" class="wrapper">
       
-
 
       <!-- mempool display -->
       <form method="post" action="" id="mempoolform">

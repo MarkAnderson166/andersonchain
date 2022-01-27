@@ -1,40 +1,22 @@
 
 
-/*
-// send POST request with all form data
-function sendMineRequest() {
-  remove_msg();
-  
-  $.ajax({
-    url: newBlockUrl,
-    method: 'POST',
-    data: $('#mineform').serialize(),
-    dataType: 'json',
-    success: function(data) {
-
-      $('#server_response').addClass('success');
-      $('#server_response span').text(data);
-      populateBlockHistory();
-      populateMempool();
-    },
-    error: function(jqXHR) {
-      try {
-        var $e = JSON.parse(jqXHR.responseText);
-        // display error 
-        $('#server_response').addClass('error');
-        $('#server_response span').text('Error from server: ' +$e.error);
-      }
-      catch (error) {
-        console.log('Could not parse JSON error message: ' +error);
-      }
-    }
-  });
-}
-*/
 
 //         startMining() 
 //   tell all servers to mine  (starts the race)
 //  they DO NOT run constantly, they periodically get this 'start signal'
+
+$(function() {
+  $('#minerForm').submit(function(e) {
+    e.preventDefault();
+    startMining();
+  });
+});
+
+function autoMiner(){
+  if (autoMineToggle === 1){
+    startMining();
+  }
+}
 
 function startMining() {
   remove_msg();
@@ -51,6 +33,12 @@ function startMining() {
         $('#server_response span').text(data);
         populateBlockHistory();
         populateMempool();
+        getAllBalances();
+
+      }, error: function(data) {
+        populateBlockHistory();
+        populateMempool();
+        getAllBalances();
       }
     });
   }  
@@ -117,3 +105,44 @@ function populateBlockExplorer(transHash) {
     })
   });
 }
+
+
+
+
+
+
+
+
+
+
+/*
+// send POST request with all form data
+function sendMineRequest() {
+  remove_msg();
+  
+  $.ajax({
+    url: newBlockUrl,
+    method: 'POST',
+    data: $('#mineform').serialize(),
+    dataType: 'json',
+    success: function(data) {
+
+      $('#server_response').addClass('success');
+      $('#server_response span').text(data);
+      populateBlockHistory();
+      populateMempool();
+    },
+    error: function(jqXHR) {
+      try {
+        var $e = JSON.parse(jqXHR.responseText);
+        // display error 
+        $('#server_response').addClass('error');
+        $('#server_response span').text('Error from server: ' +$e.error);
+      }
+      catch (error) {
+        console.log('Could not parse JSON error message: ' +error);
+      }
+    }
+  });
+}
+*/

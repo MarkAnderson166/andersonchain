@@ -41,17 +41,24 @@ function sendWalletRequest() {
 
 //      getAllBalances()
 //  added just to monitor everything, testing only
+$(function() {
+  $('#balanceform').submit(function(e) {
+    e.preventDefault();
+    getAllBalances();
+  });
+});
 
 function getAllBalances() {
-  $('#balanceTable').empty();
-    $.ajax({
-      url: getBalanceUrl,
-      method: 'POST',
-      dataType: 'json',
-      success: function(bal) {
-        $('#balanceTable').append(bal);
-      },
-    });
+
+  $.ajax({
+    url: getBalanceUrl,
+    method: 'POST',
+    dataType: 'json',
+    success: function(bal) {
+      $('#balanceTable').empty();
+      $('#balanceTable').append(bal);
+    },
+  });
 }
 
 

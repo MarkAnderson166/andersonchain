@@ -105,3 +105,58 @@ function populateTransDetails(transHash) {
     });
   }
 }
+
+
+
+
+//      genTestTrans()
+//   generates a random transaction with a button or timer
+//      (assuming everyones password is 'password')
+
+function genTestTrans() {
+  remove_msg();
+
+  if (autoTranToggle === 1){
+    
+    let $publicKeys = []
+    $.getJSON(walletDBurl, function(data) {
+      $.each(data, function (key, entry) {
+        $publicKeys.push(entry.publicKey);
+      })
+
+      $sender   =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
+      $receiver =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
+        // careful, this while loop will do nasty things
+        // if the genesis block ever starts with < 2 wallets
+      while ($receiver == $sender){
+        $receiver = $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
+      }
+      $value    =  Math.floor(Math.random() * 10)+10;
+
+      $.ajax({
+        url: "https://turing.une.edu.au/~mander53/turing"+(Math.floor(Math.random()* 3)+1)+"/transaction.php", //  newTransactionUrl,
+        method: 'POST',
+        data: 'sender='+$sender+'&password=password&receiver='+$receiver+'&value='+$value+'&fee='+$value/100,
+        dataType: 'json',
+        success: function(data) {
+
+          $('#server_response').addClass('success');
+          $('#server_response span').text('Test transaction added');
+          populateMempool();
+        },
+        error: function(jqXHR) {
+          try {
+            var $e = JSON.parse(jqXHR.responseText);
+            // display error 
+            $('#server_response').addClass('error');
+            $('#server_response span').text('Error from server: ' +$e.error);
+          }
+          catch (error) {
+            console.log('Could not parse JSON error message: ' +error);
+          }
+        }
+      });
+    });
+  }
+}
+
