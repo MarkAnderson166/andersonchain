@@ -27,18 +27,19 @@ Wall of text goes here
 
 Each block consists of:
 
-| Key           | Type                      | Example           |
-| ------------- | ------------------------- | ----------------- |
-| Hash          | String (Hexidecimal Hash) | "000046a6fa18..." |
-| Miner         | String (Hexidecimal Hash) | "5275ea582875..." |
-| Index         | Int                       | 6                 |
-| PreviousHash  | String (Hexidecimal Hash) | "27f7188a7010..." |
-| Nonce         | Int                       | 31774             |
-| Coinbase      | Float                     | 12.50             |
-| Timestamp     | Float                     | 1643204369.4139   |
-| Fees          | Float                     | 0.13              |
+| Key           | Type          | Example           |
+| ------------- | ------------- | ----------------- |
+| Hash          | String (Hash) | "000046a6fa18..." |
+| Miner         | String (Hash) | "5275ea582875..." |
+| Index         | Int           | 6                 |
+| PreviousHash  | String (Hash) | "27f7188a7010..." |
+| Nonce         | Int           | 31774             |
+| Coinbase      | Float         | 12.50             |
+| Timestamp     | Float         | 1643204369.4139   |
+| Fees          | Float         | 0.13              |
 | TransactionData | Array [json objects] | [{"Hash":"c35f..},{"Hash":"c35f..}] |
 | TransactionHashes | Array [hash strings]  | ["c35f6...","c35f6..."]   |
+
 (int and float types are converted to string when encoded to .json)
 
 The Hash being generated from fields:
@@ -53,9 +54,16 @@ Example of a block json object in the chain:
 {"Hash":"000046....","Miner":"5275ea....","Index":"1","PreviousHash":"27f71....","Nonce":"31774","Coinbase":"50","Timestamp":"1643204369.4139","Fees":"0","TransactionData":[{"Hash":"c35f63....","Sender":"Mining_Reward","Sender Balance":"0","Receiver":"5275ea....","Receiver Balance":"50","Value":"50","Fee":"0","Timestamp":"1643204369.415"}],"TransactionHashes":["c35f63...."]}
 ```
 
-## Wallets, GUI, Simulation
+## Wallets and GUI
 
-Unlike most crypto currencies that use multiple encryption algorithms, my system uses SHA256 for both 'proof-of-work' and for wallet keys. As there is no reason not too and I can use it with JS and PHP without external libraries.
+
+
+Each wallet consists of a 'private key' and a 'public key', the public key is simply a hash of the private key.
+Like most crypto currencies, knowing the private key grants full control of that wallet, loosing/forgetting the private key renders that wallet unrecoverable.
+Unlike most crypto currencies my system uses SHA256 for both 'proof-of-work' and for wallet keys. (others use Elliptic Curve Digital Signature Algorithm or ECDSA for keys) As I can use sha256 with JS and PHP without external libraries. I also chose to forgo the seperation of public keys and wallet 'addresses' and just left them as the same thing.
+
+Throughout development it was essential to keep a database on the server of all generated wallets. This was suposed to be removed at the end of development, but I have chosen to keep it as it is used for the automactic transaction generator and makes normal transaction creation simplier.  
+However, all other uses of it have been removed and disabling the database will only break the transaction creator.
 
 ## Transactions and the Mempool
 
@@ -67,14 +75,15 @@ for eg. transaction validation currently does not involve searching the ENTIRE b
 
 Each transaction consists of:
 
-| Key        | Type                      | Example             |
-| ---------- | ------------------------- | ------------------- |
-| Hash       | String (Hexidecimal Hash) | "144f9fad6deb..."   |
-| Sender     | String (Hexidecimal Hash) | "e3f9de2fab8f..."   |
-| Receiver   | String (Hexidecimal Hash) | "bd5aef5596a5..."   |
-| Value      | Float                     | 13                  |
-| Fee        | Float                     | 0.13                |
-| Timestamp  | Float                     | 1643204798.942423   |
+| Key        | Type          | Example             |
+| ---------- | ------------- | ------------------- |
+| Hash       | String (Hash) | "144f9fad6deb..."   |
+| Sender     | String (Hash) | "e3f9de2fab8f..."   |
+| Receiver   | String (Hash) | "bd5aef5596a5..."   |
+| Value      | Float         | 13                  |
+| Fee        | Float         | 0.13                |
+| Timestamp  | Float         | 1643204798.942423   |
+
 (int and float types are converted to string when encoded to .json)
 
 The Hash being generated from all other fields:
@@ -104,10 +113,6 @@ The transaction timestamp is used briefly in sorting which transactions will go 
 It is NOT used to retrieve a balance, is was designed to but that created one hell of bug that took days to find.  
 The block timestamp plus the transactions index within that block is used for balance retrieval functions.
 
-### Img link
-
-<img src="Gant.PNG" alt="Gant Chat" width="1000"/>
-
 ### Theory and Project references
 
 Alongside developing the Anderson Chain, over the past 4 months I also completed two Udemy courses and the 'Naivecoin' Tutorial  
@@ -127,13 +132,12 @@ On top of the python example from the second Udemy course I’ve also been using
 I also made use of <https://www.blockchain.com/explorer> during both theory and development.
 
 
-
 TODO:
 
-re-work key generation  
-gui tweaks for wallet changes
+FINAL gui tweak with final removal of walletDB ( use the function in getBalance() and keep a list in memory for auto-trans)
 
-## Blockchain, Mining, Proof of work
-## Wallets, GUI, Simulation
-## Introduction
-write-up Polish 
+Write-up:
+ Blockchain, Mining, Proof of work
+ Wallets, GUI, Simulation
+ Introduction
+write-up Polish

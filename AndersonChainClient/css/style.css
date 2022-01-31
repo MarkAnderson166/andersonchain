@@ -45,7 +45,15 @@ h2 {
 #rightWrapper {
   width: 67%;
 }
-
+#activeWalletsList {
+  width: 1050px;
+  float: left;
+  border: 1px solid #000;
+  border-radius: 10px;
+  padding: 1%;
+  overflow: auto;
+  background-color: rgb(43, 75, 167);
+}
 
 
 .leftBox {
@@ -57,6 +65,10 @@ h2 {
   padding: 0.6%;
   background-color: #740415af;
   margin: 0.3%;
+  margin-top: 10px;
+}
+#linkForm {
+  height: 30px;
 }
 .leftBoxThird {
   float: left;
@@ -66,6 +78,7 @@ h2 {
   padding: 0.6%;
   background-color: #740415af;
   margin: 0.3%;
+  margin-top: 10px;
 }
 .leftBoxHalf {
   float: left;
@@ -75,9 +88,13 @@ h2 {
   padding: 0.6%;
   background-color: #4e6135af;
   margin: 0.3%;
+  margin-top: 10px;
 }
 
-.walletDropdown {
+.senderDropdown {
+  background-color: gray;
+}
+.receiverDropdown {
   background-color: gray;
 }
 
@@ -93,6 +110,10 @@ h2 {
 }
 #Genesis {
   background-color: rgb(0, 0, 0);
+}
+#linkForm{
+  margin-top: 20px;
+  background-color: rgb(165, 147, 147);
 }
 
 
@@ -163,6 +184,7 @@ h2 {
 }
 
 
+
 /* form submit and reset buttons */
 .button {
   margin: 10px,10px,0,0;
@@ -179,7 +201,7 @@ h2 {
 /* server_response */
 #server_response {
   width: 96%;
-  height: 50px;
+  height: 75px;
   border: 1px solid #000;
   border-radius: 5px;
   padding: 1%;

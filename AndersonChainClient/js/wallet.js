@@ -7,22 +7,25 @@ $(function() {
 });
 
 //      sendWalletRequest() 
-//  for creating new wallets
+//  just shows user a private/public key pair
+//  that can be used in the chain
 
-// send POST request with all form data
+
 function sendWalletRequest() {
   remove_msg();
-  
+
   $.ajax({
     url: newWalletUrl,
     method: 'POST',
-    data: $('#walletform').serialize(),
+    data: {'nothing':'empty'},
     dataType: 'json',
     success: function(data) {
 
       $('#server_response').addClass('success');
-      $('#server_response span').text('New Wallet: ' +data);
-      populateDropdowns();
+      $('#server_response span').text('New Wallet: '+data.slice(0,12)+'...');
+      //populateDropdowns();
+      $('#activeWalletsListList').append(data);
+
     },
     error: function(jqXHR) {
       try {

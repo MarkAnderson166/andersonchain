@@ -119,18 +119,20 @@ function genTestTrans() {
   if (autoTranToggle === 1){
     
     let $publicKeys = []
+    let $privateKeys = []
     $.getJSON(walletDBurl, function(data) {
       $.each(data, function (key, entry) {
         $publicKeys.push(entry.publicKey);
+        $privateKeys.push(entry.privateKey);
       })
 
-      $sender   =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
+      $sender   =   $privateKeys[Math.floor(Math.random() * $privateKeys.length)];
       $receiver =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
         // careful, this while loop will do nasty things
         // if the genesis block ever starts with < 2 wallets
-      while ($receiver == $sender){
-        $receiver = $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-      }
+    //  while ($receiver == $sender){
+    //    $receiver = $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
+    //  }
       $value    =  Math.floor(Math.random() * 10)+10;
 
       $.ajax({

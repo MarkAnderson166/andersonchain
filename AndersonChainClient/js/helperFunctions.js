@@ -21,13 +21,12 @@ var autoTranToggle = 0;
 
 window.onload = function() {
   selectServer(1);
-  populateDropdowns();
-  populateMempool();
-  populateBlockHistory();
-  getAllBalances();
+//  populateDropdowns();
+//  populateMempool();
+//  populateBlockHistory();
   $(document).ready(function() { $.ajaxSetup({ cache: false }); });
-  $('#transactionExplorerTable').append("(click any transaction hash)");
-  $('#blockExplorerTable').append("(click any block hash)");
+//  $('#transactionExplorerTable').append("(click any transaction hash)");
+//  $('#blockExplorerTable').append("(click any block hash)");
 };
 
 
@@ -41,17 +40,16 @@ function checkForUpdates(){
     dataType: "json",
     data: {'Timestamp': Math.floor(Date.now()/1000) },
     success: function(data) {
-      if (data % 2 == 0){ populateDropdowns(); }
+    //  if (data % 2 == 0){ populateDropdowns(); }
       if (data % 3 == 0){ populateMempool(); }
       if (data % 5 == 0){ populateBlockHistory(); }
-      if (data > 1     ){ getAllBalances(); }
     },
   });
 }
 
-// ----------------    Auto  miner, tranaction generator ----------------------
+// ----------------    Auto  miner, transaction generator ----------------------
 $(function() { setInterval(genTestTrans, 2000); });
-$(function() { setInterval(autoMiner, 30000); });
+$(function() { setInterval(autoMiner, 10000); });
 
 $(function() {
   $('#autoFormMine').submit(function(e) {
@@ -126,7 +124,7 @@ function selectServer(choice) {
   $('#serverSelectorHeader').append(('Selected Server: Turing'+choice));
 }
 
-
+/*
 //  -------------------------   populateDropdowns() ----------------
 //   ease of use GUI element,
 //   needs to change to allow manual key entry after wallet changes
@@ -140,13 +138,17 @@ function populateDropdowns() {
     dataType: 'json',
     success: function(data) {
       $.each(data, function (key, entry) {
-        let formattedString = entry.walletIndex+' : '+entry.name;
-        $('.walletDropdown').append(new Option(formattedString, entry.publicKey));
+        let formattedString = entry.publicKey.slice(0,6)+'...';
+        $('.receiverDropdown').append(new Option(formattedString, entry.publicKey));
+      })
+      $.each(data, function (key, entry) {
+        let formattedString = entry.privateKey.slice(0,10)+'...';
+        $('.senderDropdown').append(new Option(formattedString, entry.privateKey));
       })
     },
   });
 }
-
+*/
 
 //   --------------------------------   remove_msg()  ----------------
 // remove messages / colors displayed in the server response box
@@ -172,7 +174,7 @@ function remove_msg() {
 
 // ----- Functions for Testing only ---------  
 // ===========================================================================
-
+/*
 //    generateStatement()
 // dumps a text file per wallet to server containing every transaction.
 
@@ -197,8 +199,8 @@ function generateStatement(){
     },
   });
 }
-
-
+*/
+/*
 //    'whoIs' button
 //  input arg: wallet public key
 //     looks up matching name in wallet db,
@@ -225,7 +227,7 @@ $(function() {
   });
 });
 
-
+*/
 
 //   --------------------------------   genesisBlock()      ----------------
 // clear entire chain, mempool and wallet database (bezos button)

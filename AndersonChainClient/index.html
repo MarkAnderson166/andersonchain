@@ -41,18 +41,16 @@
         <legend>
           <h2>New Transaction</h2>
         </legend>
-        <div>
-        <label for="sender">Sender:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        <select id="sender-dropdown" name="sender" class="walletDropdown"></select>
-        </div>
         <fieldset>
-          <label for="password">Password:</label>
-          <input type="text" name="password"/>
+          <label for="sender">Sender:&nbsp;&nbsp;</label>
+          <input type="text" name="sender"/>
+        <!-- <select id="sender-dropdown" name="sender" class="senderDropdown"></select> -->
         </fieldset>
-        <div>
-        <label for="receiver">Receiver:&nbsp;&nbsp;&nbsp;</label>
-        <select id="receiver-dropdown" name="receiver" class="walletDropdown"></select>
-        </div>
+        <fieldset>
+          <label for="receiver">Receiver:</label>
+          <!-- <select id="receiver-dropdown" name="receiver" class="receiverDropdown"></select> -->
+          <input type="text" name="receiver"/>
+        </fieldset>
         <fieldset>
           <label for="value">Value:</label>
           <input type="text" name="value"/>
@@ -62,7 +60,7 @@
           <input type="text" name="fee"/>
         </fieldset>
         <fieldset>
-          <input type="submit" class="button"/>
+          <input type="submit" class="button"/>(No trailing spaces)
         </fieldset>
 
       </form>  
@@ -84,49 +82,11 @@
         <input type="submit" value="Turing3" class="buttonWide"/>
       </form>  
 
-
+      
       <!-- registration form -->
       <form method="post" action="" id="walletform" class='leftBox'>
-        <legend>
-          <h2>New Wallet</h2>
-        </legend>
-        <fieldset>
-          <label for="name">Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-          <input type="text" name="name"/>
-        </fieldset>
-        <fieldset>
-          <label for="password">Password:</label>
-          <input type="text" name="password"/>
-        </fieldset>
-        <fieldset>
-          <input type="submit" class="button"/>
-        </fieldset>
+        New Wallet:   <input type="submit" class="button" value="Generate"/>
       </form>  
-
-
-      <!-- Balance form -->
-      <form method="post" action="" id="balanceform" class='leftBox'>
-        <legend>
-          <h2>Wallet Balances</h2>
-        </legend>
-        <table id="balanceTable"></table>  
-        <input type="submit" value="Update" class="button"/>      
-      </form>  
-
-
-      <!-- who is form
-      <form method="post" action="" id="whoIsForm" class='leftBox'>
-        <legend>
-          <h2>Name from Key</h2>
-        </legend>
-        <fieldset>
-          <label for="Key">Key:&nbsp;</label>
-          <input type="text" name="Key"/>
-        </fieldset>
-        <fieldset>
-          <input type="submit" class="button"/>
-        </fieldset>
-      </form>   -->
 
 
             <!-- Buttons for: DeBug / Testing   -->
@@ -154,6 +114,31 @@
         <input type="submit" class="buttonWide" value="Mine Block"/>
       </form>  
 
+
+      <!-- Balance form -->
+      <form method="post" action="" id="balanceform" class='leftBox'>
+        <legend>
+          <h2>Wallet Balances</h2>
+        </legend>
+        <table id="balanceTable"></table>  
+        <input type="submit" value="Update" class="button"/>      
+      </form>  
+
+
+      <!-- who is form
+      <form method="post" action="" id="whoIsForm" class='leftBox'>
+        <legend>
+          <h2>Name from Key</h2>
+        </legend>
+        <fieldset>
+          <label for="Key">Key:&nbsp;</label>
+          <input type="text" name="Key"/>
+        </fieldset>
+        <fieldset>
+          <input type="submit" class="button"/>
+        </fieldset>
+      </form>   -->
+
     <!-- Statement 
     <form method="post" action="" id="Statement" class='leftBox'>
       <fieldset>
@@ -161,6 +146,10 @@
         <input type="submit" class="button" value="Statement"/>
       </fieldset>
     </form>  -->
+       
+      <form id="linkForm"  class="leftBox">
+        <a href="https://github.com/MarkAnderson166/andersonchain#readme"> ReadMe and Git Repo</a><pre>
+      </form> 
 
     </div>
 
@@ -199,7 +188,7 @@
           <legend>
             <h2>Transaction Data</h2>
           </legend>
-          <table id="transactionExplorerTable"></table>
+          <table id="transactionExplorerTable">(click any transaction hash)</table>
         </div>
       </form> 
 
@@ -209,11 +198,26 @@
         <legend>
           <h2>Block Explorer</h2>
         </legend>
-        <table id="blockExplorerTable"></table>
+        <table id="blockExplorerTable">(click any block hash)</table>
       </div>
     </form> 
 
     </div>
+
+
+    <!-- Active Wallets List -->
+    <form method="post" action="" id="activeWalletsList">
+      <legend>
+        <h2 id="activeWalletsListHeader">Active Wallets List: <pre></h2>
+        <h3 id="activeWalletsListList">
+          3917ef563af057e38cb505491b3633ac4fdbaaf468e5fbe4c0c5d75a30d3a3c4&nbsp; Guybrush Threep Wood
+          209350df7ff616c0d01100965aa9f59c3c47f0945db2f8f904304d3af66cd6b7&nbsp; Jester LeVorr Stone
+          4c02116754ee171cf3bbad6a42f9268e6fb7d10a3e7c467dc306a145951dcea2&nbsp; Lindy Llyod Beige
+        </h3>
+      </legend>
+    </form>  
+
+
   </div>
 </body>
 </html>
