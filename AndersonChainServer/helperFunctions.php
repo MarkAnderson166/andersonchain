@@ -67,9 +67,9 @@ function getBalance($publicKey){
 }
 
 
-
+//  -removed
 /*================== Server-Side Statement Generator ====================*/
-
+/*
 # this should probably be a wallet feature instead of a purely diagnostic tool,
 # but this was much easier to throw together to find a bug, so its here for now.
 
@@ -104,4 +104,4 @@ function generateStatement() {
       file_put_contents('listDump_'.substr($walletKey,0,10).'.json', json_encode($translist));
     }
   }
-}
+}*/

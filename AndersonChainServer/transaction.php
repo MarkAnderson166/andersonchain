@@ -15,28 +15,20 @@ require_once('helperFunctions.php');
 
   // ensure POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $sender =    $_POST['sender'];
-  $password =  $_POST['password'];
+
+  $sender =    hash('sha256', $_POST['sender']);
   $receiver =  $_POST['receiver'];
   $value =     $_POST['value'];
   $fee   =     $_POST['fee'];
   if ( !isset( $_POST['Timestamp'] ) ){ $timestamp = microtime(true); }
 
 
-
-
-    //  TODO: Password validation can't use wallet database
-    // ( because there shouldn't be a wallet database - its for testing only )
-/*  $json = file_get_contents('walletDB.json');
-  $walletJsonData = json_decode($json, true);
-  foreach($walletJsonData as $obj => $key) {
-    if ( $key['publicKey'] === $sender) {
-      if ( hash('sha256', $password.$key['name'].$key['Timestamp']) !== $sender) {
-        error(400, "Password does not match ".$key['name']);
-      }
-    }
+  if (getBalance($sender) === 0){
+    error(400, "Wallet has no balance ".$sender);
+  } else if ( $sender === $receiver ) {
+    error(400, "Sender cannot be Reciever");
   }
-*/
+
 
   $json = file_get_contents('transactionDB.json');
   $transJsonData = json_decode($json, true);

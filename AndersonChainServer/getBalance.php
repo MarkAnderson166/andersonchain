@@ -17,20 +17,35 @@ require_once('helperFunctions.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+// =================================
+    //  get a list of all public keys in existance
+    //  --replacement for wallet database, diagnostic only
+  $blockArr = json_decode(file_get_contents('blockChain.json'), true);
+  $allReceivers = [];
+  foreach($blockArr as $arr => $block) {
+    $transArr = $block['TransactionData'];
+    foreach($transArr as $obj => $key) {
+      $allReceivers[] =  $key['Receiver'];
+    }
+  }
+  $allReceivers = array_unique($allReceivers);
+// =================================
+
+
   $returnString = '';
-  $json = file_get_contents('walletDB.json');
-  $walletJsonData = json_decode($json, true);
   $Total = 0;
-  foreach($walletJsonData as $obj => $key) {
-    $bal = getBalance($key['publicKey']);
+  foreach($allReceivers as $index => $key) {
+    $bal = getBalance($key);
     $Total = $Total+$bal;
-    $returnString = $returnString.$bal.' : '.$key['name'].'<pre>';
+    $returnString = $returnString.$bal.' : '.substr($key,0,16).'...'.'<pre>';
   }
   $returnString = $returnString.'Total Marks : '.$Total;
 
   echo json_encode($returnString);
     
-  // 405: unsupported request method
+
+
 } else {
     error(405, 'POST requests only');
 }
+

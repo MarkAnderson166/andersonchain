@@ -28,14 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       // doing these vars in 1-2 steps threw weird errors
   $lastNewWallet = json_decode(file_get_contents('walletDB.json'), true);
-  $lastNewWallet = array_pop($lastNewWallet);
-  $lastNewWallet = floor($lastNewWallet['Timestamp']);
-  if ($clientTime - $lastNewWallet < $interval ) { $flag = $flag*2;}
+  if ( !empty($lastNewWallet)){
+    $lastNewWallet = array_pop($lastNewWallet);
+    $lastNewWallet = floor($lastNewWallet['Timestamp']);
+    if ($clientTime - $lastNewWallet < $interval ) { $flag = $flag*2;}
+  }
 
   $lastNewTrans = json_decode(file_get_contents('transactionDB.json'), true);
-  $lastNewTrans = array_pop($lastNewTrans);
-  $lastNewTrans = floor($lastNewTrans['Timestamp']);
-  if ($clientTime - $lastNewTrans < $interval ) { $flag = $flag*3;}
+  if ( !empty($lastNewTrans)){
+    $lastNewTrans = array_pop($lastNewTrans);
+    $lastNewTrans = floor($lastNewTrans['Timestamp']);
+    if ($clientTime - $lastNewTrans < $interval ) { $flag = $flag*3;}
+  }
 
   $lastNewBlock = json_decode(file_get_contents('blockChain.json'), true);
   $lastNewBlock = array_pop($lastNewBlock);
