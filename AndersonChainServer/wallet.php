@@ -14,15 +14,29 @@ require_once('helperFunctions.php');
 
 /*============================= Main ================================*/
 
-  // ensure POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $walletIndex = 0;
-  $name =    validateEntry('name');
-  $password =  validateEntry('password');
-  $timestamp = microtime(true);
-    //$publicKey = generateKey($password, $name, $wallet);
-    // key can't be generated until after wallet index is counted
-    // index included just for GUI reasons in the event of duplicate names
+    
+/* get array of 3-5 random words ,  was more work then its worth. --------
+       words.json lifted from:
+       https://github.com/words/an-array-of-english-words.git
+       contributors: Zeke Sikelianos, Titus, Johnny B
+*/
+  $words = file_get_contents('words.json'); 
+  $words = explode(',', $words);
+  $randWords =  '';
+  $privateKey =  '';
+  while (strlen($randWords) < 25){
+    $newWord = $words[rand(0,sizeof($words))];
+    if ( strlen($newWord) < 9 && strlen($newWord) > 5 ){
+      $randWords = $randWords.$newWord.' ';
+    }
+  }
+  for ($i = 0; $i< strlen($randWords); $i++){  // cut out quotation marks
+    if ( $randWords[$i] !== '"') { $privateKey = $privateKey.$randWords[$i]; }
+  }
+  $privateKey = substr($privateKey,0,strlen($privateKey)-1);//cut off trailing ' '
+// ---------------------------------------------------------------------------
+
 
   if (!file_exists('walletDB.json')){
     $json = "";
@@ -30,27 +44,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $json = file_get_contents('walletDB.json');
   }
   $data = json_decode($json, true);
-
   if (!empty($data)) {$walletIndex = count($data);}
 
-  $publicKey = hash('sha256', $password.$name.$timestamp);
+  $publicKey = hash('sha256', $privateKey);
 
-  $data[] = [ 'walletIndex' => $walletIndex,
-              'name' => $name,
-              'Timestamp' => $timestamp,
-              'publicKey' => $publicKey ];
+  $data[] = [ 'privateKey' => $privateKey,
+              'publicKey' => $publicKey,
+              'Timestamp' => microtime(true)  ];
+    // Timestamp is only used for GUI updates
+    // for testing only
   file_put_contents('walletDB.json', json_encode($data));
 
       // return newly created ID
-  echo json_encode([$name]);
+  echo json_encode([$publicKey.'   '.$privateKey.'<pre>']);
 }
-  // 405: unsupported request method
+
+
 else {
     error(405, 'POST requests only');
 }
 
 /*========================= Input Validation ========================*/
-
+/*
 function validateEntry($param) {
 
       // Check the given name is valid
@@ -78,4 +93,8 @@ function validateEntry($param) {
   else {
     error(400, "Server requires a POST request with POST data");
   }
-}
+}*/
+
+
+
+
