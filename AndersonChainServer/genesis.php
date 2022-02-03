@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'Miner' => '$miner',
                 'Index' => 0, 
                 'PreviousHash' => '$previousHash',
+                'Nonce' => 0,
                 'Coinbase' => 0,
                 'Timestamp' => 0,
                 'Fees' => 0, 

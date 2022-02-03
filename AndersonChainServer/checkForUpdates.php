@@ -8,7 +8,6 @@
 ini_set('display_errors', TRUE);
 header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Origin: *");
-
 require_once('helperFunctions.php');
 
 

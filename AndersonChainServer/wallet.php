@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   file_put_contents('walletDB.json', json_encode($data));
 
       // return newly created ID
-  echo json_encode([$publicKey.'   '.$privateKey.'<pre>']);
+  echo json_encode([$publicKey.'  =  '.$privateKey.'<pre>']);
 }
 
 

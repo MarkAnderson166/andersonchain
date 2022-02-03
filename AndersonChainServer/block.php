@@ -66,24 +66,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $finalTransList = (array) null;
 
   // sorts by fee amount, to cherry pick most profitable trans to mine.
-/*  if (!empty($transactionData)){
-    usort($transactionData, function($a, $b) {
+  if (!empty($transactionData)){
+  /*  usort($transactionData, function($a, $b) {
       return $a['Fee'] < $b['Fee'];
     });
   }
   $transCounter = 0; */
-  foreach($transactionData as $obj => $key) {
-    //$transCounter++;
-       
-      // discard where sender=receiver, you can't send marks to yourself
-    if( //($transCounter < count($transactionData)) &&
-            ($key['Sender'] != $key['Receiver'])){
-                       
-        //trans to be included in block:
-      $selectedTrans[] =  $key ;
-    } else {
-        //trans NOT to be included in block:
-      $ignoredTrans[] =  $key;
+    foreach($transactionData as $obj => $key) {
+      //$transCounter++;
+        
+        // discard where sender=receiver, you can't send marks to yourself
+      if( //($transCounter < count($transactionData)) &&
+              ($key['Sender'] != $key['Receiver'])){
+                        
+          //trans to be included in block:
+        $selectedTrans[] =  $key ;
+      } else {
+          //trans NOT to be included in block:
+        $ignoredTrans[] =  $key;
+      }
     }
   }
 
@@ -102,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // balance is retrieved from most recent varified trans pending for this
       // block, then second most recent etc..
       // if key is not previously found in the current pending block,
-      // get balance from chain (function in helpers.php)
+      // get balance from chain
   $finalTransList = [];
   if (!empty($selectedTrans)){
     foreach($selectedTrans as $obj => $key) {
@@ -137,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // the miner receives the mining rewards as a transaction, which is 
     // made at the time of mining., trans must be made after fee calculation.
   $coinbaseTimestamp = microtime(true);
-  $hash = hash('sha256', $sender.$receiver.$value.$fee.$timestamp);
+  //$hash = hash('sha256', $sender.$receiver.$value.$fee.$timestamp);
 
   $coinbaseTransHash = hash('sha256','Mining_Reward'.$miner.$coinbase.'0'.$coinbaseTimestamp);
   $minerBalance = balanceFromArrayThenChain($miner, $finalTransList) + $coinbase +$fees;
@@ -148,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       'Receiver' => $miner,
                       'Receiver Balance' => strval($minerBalance),
                       'Value' => strval($coinbase +$fees),
-                      'Fee' => strval(0),
+                      'Fee' => strval($fees),
                       'Timestamp' => $coinbaseTimestamp ];
 
 
@@ -213,7 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 else {
     error(405, 'POST requests only');
 }
-
 
 
 function balanceFromArrayThenChain($key, $array) {
@@ -297,7 +297,7 @@ function rehash($blocksJsonData) {
     }
     $hash = hash('sha256',$hashDataStr);
 
-    if ( $obj['Hash'] !== $hash) {
+    if ( $obj['Hash'] !== $hash && $obj['Index'] !== 0) {
       $dumped = file_get_contents('dump.json');
       $str = $dumped.' ## ERROR, ERROR WORLD IN CRYSIS! ##  |'.$obj['Index'].'| '.$obj['Hash'].' !== '.$hash;
       file_put_contents('dump.json', $str);
