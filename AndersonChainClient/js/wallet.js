@@ -6,31 +6,23 @@ $(function() {
   });
 });
 
-//      sendWalletRequest() 
-//  just shows user a private/public key pair
-//  that can be used in the chain
-
 
 function sendWalletRequest() {
   remove_msg();
-
   $.ajax({
     url: newWalletUrl,
     method: 'POST',
     data: {'nothing':'empty'},
     dataType: 'json',
     success: function(data) {
-
       $('#server_response').addClass('success');
       $('#server_response span').text('New Wallet: '+data.slice(0,12)+'...');
       //populateDropdowns();
       $('#activeWalletsListList').append(data);
-
     },
     error: function(jqXHR) {
       try {
         var $e = JSON.parse(jqXHR.responseText);
-        // display error
         $('#server_response').addClass('error');
         $('#server_response span').text('Error from server: ' +$e.error);
       }
@@ -50,13 +42,12 @@ $(function() {
     getAllBalances();
   });
 });
-
 function getAllBalances() {
-
   $.ajax({
     url: getBalanceUrl,
     method: 'POST',
     dataType: 'json',
+    data: 'justList=0',
     success: function(bal) {
       $('#balanceTable').empty();
       $('#balanceTable').append(bal);

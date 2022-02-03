@@ -7,7 +7,6 @@ var serverUrl = "https://turing.une.edu.au/~mander53/turing3/"
 
 var newWalletUrl =      serverUrl+"wallet.php";
 var newTransactionUrl = serverUrl+"transaction.php";
-//var newBlockUrl =       serverUrl+"block.php";
 var genesisUrl =        serverUrl+"genesis.php";
 var statementUrl =      serverUrl+"statement.php";
 var checkForUpdatesUrl= serverUrl+"checkForUpdates.php";
@@ -21,13 +20,8 @@ var autoTranToggle = 0;
 
 window.onload = function() {
   selectServer(1);
-//  populateDropdowns();
-//  populateMempool();
-//  populateBlockHistory();
   $(document).ready(function() { $.ajaxSetup({ cache: false }); });
-//  $('#transactionExplorerTable').append("(click any transaction hash)");
-//  $('#blockExplorerTable').append("(click any block hash)");
-};
+}
 
 
 $(function() { setInterval(checkForUpdates, 1800); });
@@ -122,36 +116,11 @@ function selectServer(choice) {
   populateBlockHistory();
   $('#serverSelectorHeader').empty();
   $('#serverSelectorHeader').append(('Selected Server: Turing'+choice));
+  $('#activeWalletsListList').empty();
+  populateActiveWalletsList();
 }
 
-/*
-//  -------------------------   populateDropdowns() ----------------
-//   ease of use GUI element,
-//   needs to change to allow manual key entry after wallet changes
 
-function populateDropdowns() {
-  $('.walletDropdown').empty();
-  $('.walletDropdown').prop('selectedIndex', 0);
-  $.ajax({
-    url: walletDBurl,
-    method: 'POST',
-    dataType: 'json',
-    success: function(data) {
-      $.each(data, function (key, entry) {
-        let formattedString = entry.publicKey.slice(0,6)+'...';
-        $('.receiverDropdown').append(new Option(formattedString, entry.publicKey));
-      })
-      $.each(data, function (key, entry) {
-        let formattedString = entry.privateKey.slice(0,10)+'...';
-        $('.senderDropdown').append(new Option(formattedString, entry.privateKey));
-      })
-    },
-  });
-}
-*/
-
-//   --------------------------------   remove_msg()  ----------------
-// remove messages / colors displayed in the server response box
 
 function remove_msg() {
   var $server_response = $('#server_response');
@@ -169,11 +138,60 @@ function remove_msg() {
 
 
 
-
-
-
 // ----- Functions for Testing only ---------  
 // ===========================================================================
+
+
+//   --------------------------------   genesisBlock()      ----------------
+// clear entire chain, mempool and wallet database (bezos button)
+//   on all 3 servers
+
+$(function() {
+  $('#Genesis').submit(function(e) {
+    e.preventDefault();
+    genesisBlock();
+  });
+});
+
+function genesisBlock(){ 
+  
+  for ( var i = 1; i <=3; i++) {
+    $.ajax({
+      url: "https://turing.une.edu.au/~mander53/turing"+i+"/genesis.php",
+      method: 'POST',
+      data: '',
+      dataType: 'json',
+      success: function(data) {
+        if(data > 0){
+          $('#server_response').addClass('success fade');
+          $('#server_response span').text('ran genesis function')
+          //populateDropdowns();
+          populateMempool();
+          populateBlockHistory();
+          getAllBalances();
+        } 
+      },
+    });
+  }
+}
+
+function populateActiveWalletsList() {
+  $.ajax({
+    url: getBalanceUrl,
+    method: 'POST',
+    dataType: 'json',
+    data: 'justList=1',
+    success: function(data) {
+      //$('#activeWalletsListList').append( '3917ef563af057e38cb505491b3633ac4fdbaaf468e5fbe4c0c5d75a30d3a3c4&nbsp; Guybrush Threep Wood <pre>'+
+      //                                    '209350df7ff616c0d01100965aa9f59c3c47f0945db2f8f904304d3af66cd6b7&nbsp; Jester LeVorr Stone <pre>'+
+      //                                    '4c02116754ee171cf3bbad6a42f9268e6fb7d10a3e7c467dc306a145951dcea2&nbsp; Lindy Llyod Beige');
+    
+      $('#activeWalletsListList').append(data);
+
+    }
+  });
+}
+
 /*
 //    generateStatement()
 // dumps a text file per wallet to server containing every transaction.
@@ -229,35 +247,32 @@ $(function() {
 
 */
 
-//   --------------------------------   genesisBlock()      ----------------
-// clear entire chain, mempool and wallet database (bezos button)
-//   on all 3 servers
 
-$(function() {
-  $('#Genesis').submit(function(e) {
-    e.preventDefault();
-    genesisBlock();
+/*
+//  -------------------------   populateDropdowns() ----------------
+//   ease of use GUI element,
+//   needs to change to allow manual key entry after wallet changes
+
+function populateDropdowns() {
+  $('.walletDropdown').empty();
+  $('.walletDropdown').prop('selectedIndex', 0);
+  $.ajax({
+    url: walletDBurl,
+    method: 'POST',
+    dataType: 'json',
+    success: function(data) {
+      $.each(data, function (key, entry) {
+        let formattedString = entry.publicKey.slice(0,6)+'...';
+        $('.receiverDropdown').append(new Option(formattedString, entry.publicKey));
+      })
+      $.each(data, function (key, entry) {
+        let formattedString = entry.privateKey.slice(0,10)+'...';
+        $('.senderDropdown').append(new Option(formattedString, entry.privateKey));
+      })
+    },
   });
-});
-
-function genesisBlock(){ 
-  
-  for ( var i = 1; i <=3; i++) {
-    $.ajax({
-      url: "https://turing.une.edu.au/~mander53/turing"+i+"/genesis.php",
-      method: 'POST',
-      data: '',
-      dataType: 'json',
-      success: function(data) {
-        if(data > 0){
-          $('#server_response').addClass('success fade');
-          $('#server_response span').text('ran genesis function')
-          populateDropdowns();
-          populateMempool();
-          populateBlockHistory();
-          getAllBalances();
-        } 
-      },
-    });
-  }
 }
+*/
+
+//   --------------------------------   remove_msg()  ----------------
+// remove messages / colors displayed in the server response box

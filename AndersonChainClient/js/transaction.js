@@ -7,7 +7,6 @@ $(function() {
 });
 
 
-// send POST request with all form data
 function sendtransactionRequest() {
   remove_msg();
   $.ajax({
@@ -110,8 +109,7 @@ function populateTransDetails(transHash) {
 
 
 //      genTestTrans()
-//   generates a random transaction with a button or timer
-//      (assuming everyones password is 'password')
+//   generates a random transactions
 
 function genTestTrans() {
   remove_msg();
@@ -128,20 +126,14 @@ function genTestTrans() {
 
       $sender   =   $privateKeys[Math.floor(Math.random() * $privateKeys.length)];
       $receiver =   $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-        // careful, this while loop will do nasty things
-        // if the genesis block ever starts with < 2 wallets
-    //  while ($receiver == $sender){
-    //    $receiver = $publicKeys[Math.floor(Math.random() * $publicKeys.length)];
-    //  }
       $value    =  Math.floor(Math.random() * 10)+10;
 
       $.ajax({
         url: "https://turing.une.edu.au/~mander53/turing"+(Math.floor(Math.random()* 3)+1)+"/transaction.php", //  newTransactionUrl,
         method: 'POST',
-        data: 'sender='+$sender+'&password=password&receiver='+$receiver+'&value='+$value+'&fee='+$value/100,
+        data: 'sender='+$sender+'&receiver='+$receiver+'&value='+$value+'&fee='+$value/100,
         dataType: 'json',
         success: function(data) {
-
           $('#server_response').addClass('success');
           $('#server_response span').text('Test transaction added');
           populateMempool();
@@ -149,7 +141,6 @@ function genTestTrans() {
         error: function(jqXHR) {
           try {
             var $e = JSON.parse(jqXHR.responseText);
-            // display error 
             $('#server_response').addClass('error');
             $('#server_response span').text('Error from server: ' +$e.error);
           }
@@ -161,4 +152,3 @@ function genTestTrans() {
     });
   }
 }
-

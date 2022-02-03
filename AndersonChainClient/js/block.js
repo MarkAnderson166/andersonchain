@@ -1,6 +1,4 @@
 
-
-
 //         startMining() 
 //   tell all servers to mine  (starts the race)
 //  they DO NOT run constantly, they periodically get this 'start signal'
@@ -20,7 +18,6 @@ function autoMiner(){
 
 function startMining() {
   remove_msg();
-  
   for ( var i = 1; i <=3; i++) {
     $.ajax({  
       url: "https://turing.une.edu.au/~mander53/turing"+i+"/block.php",

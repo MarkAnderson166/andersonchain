@@ -34,12 +34,12 @@ h2 {
   background-color: gray;
 }
 #wrapper {
-  
   width: 1050px;
 }
 /* leftwrapper */
 #leftWrapper {
   width: 270px;
+  min-height: 748px;
 }
 /* rightWrapper */
 #rightWrapper {
@@ -121,7 +121,7 @@ h2 {
 #mempoolform {
   float: left;
   width: 47.5%;
-  height: 180px;
+  height: 155px;
   border: 1px solid #000;
   border-radius: 5px;
   padding: 0.6%;
@@ -137,7 +137,7 @@ h2 {
 #blockHistory {
   float: left;
   width: 47.5%;
-  height: 180px;
+  height: 155px;
   border: 1px solid #000;
   border-radius: 5px;
   padding: 0.6%;
@@ -159,7 +159,7 @@ h2 {
   float: left;
   width: 97%;
   min-width: 200px;
-  min-height: 230px;
+  min-height: 250px;
   border: 1px solid #000;
   border-radius: 5px;
   padding: 0.6%;
@@ -172,7 +172,7 @@ h2 {
   float: left;
   width: 97%;
   min-width: 200px;
-  min-height: 325px;
+  min-height: 300px;
   border: 1px solid #000;
   border-radius: 5px;
   padding: 0.6%;
