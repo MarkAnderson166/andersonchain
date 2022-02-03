@@ -3,7 +3,7 @@
 ## Introduction
 
 The Anderson Chain and associated crypto currency tokens (hereafter referred to as "marks") is a blockchain and crypto currency project created by Mark Anderson for Cosc301 - University of New England.
-A brief demonstration of the blockchain's core 'tamper-proof' functionality can be found at: < LINK TO YOUTUBE VIDEO I HAVEN'T MADE YET >
+A brief demonstration of the blockchain's core 'tamper-proof' functionality can be found at: <https://www.youtube.com/watch?v=XnggOjgr2_M>
 
 ### Server Hosting
 
@@ -18,6 +18,10 @@ The client is also hosted on turing but could be run from anywhere, it just send
 There is a text file (no extension) in each server’s root directory with JUST the public key that mining rewards are allocated to. No quotation marks, or formatting of any kind, JUST the 64-digit wallet key.  
 This is the only difference between servers and is used for several things, not just mining rewards.
 It is essential.
+
+**A note on Language Choice:**  
+As I have very little experience with anything web/network I anticipated the 'make-it-distributed' portion of the project to be the most difficult (I was wrong). Which is why I chose to use js/php, allowing me to use my cosc260 final project as a launching point.  
+Neither JS nor PHP are my strong suit, as is very evident by some of the code here. for eg: Only during the final days of this 3 month project did I realise I could make several different _POST requests to the same file. Which is why there are 12 .php files, it could/should be 1-3. I will likely do further refactoring of this project past its due date, for now in its current state it works, so I'm leaving it like this while its marked.
 
 ## Wallets and GUI
 
@@ -38,7 +42,9 @@ My GUI is designed and made for the purpose of demonstrating and testing my bloc
 **It IS NOT 'robust' software.**  
 It is a combination of wallet, block explorer, and diagnostic tools and is riddled with graphical bugs. It also allows the user to manually choose which server they are interacting with, which would never be possible (or good) in combination with a wallet app.  
 
-Having gone though many many changes with tools coming in and out of the implementation constantly, the code has become somewhat spaghetti. I've tried to clean it up a bit, but it remains amoung the ugliest things I've ever done. The complexity of this project forced me to choose function over form.
+For ease of testing my gui features a list of all active wallets public **and private** keys. This diagnostic feature is using the walletDB.json file on the server that really shouldn't be there. This file is not sync'd between servers so in testing if you want to use a particular wallet for a transaction you might need to switch servers.
+
+Having gone though many many changes with tools coming in and out of the implementation constantly, the code has become somewhat spaghetti. I've tried to clean it up a bit, but it remains among the ugliest things I've ever done. The complexity of this project forced me to choose function over form.
 
 While I have made an attempt to increase the efficiency of transaction processing compared to other prominent currencies, no such attempts were made with the GUI or diagnostic tools. The window displaying all current balances searches the **entirety** of the blockchain every time the button is clicked. It's inefficient on server memory, but bandwidth usage was kept in check.
 
@@ -81,6 +87,7 @@ Example of a transaction json object inside the mempool:
 ```
 
 Additional fields are calculated and added during mining,  
+( more on this in the 'Determiation of Balances, whats different about marks?' section of this write-up )  
 
 | Key        | Type          | Example             |
 | ---------- | ------------- | ------------------- |
@@ -105,8 +112,8 @@ Validation must be done in block mining to maintain chain integrity.
 **Additional** validation such as balance checking, or receiver ID verification would be handled client side by a user wallet app. My GUI did have such validation during development, but all balance functions were converted to server-side for mining.
 
 The transaction timestamp is used briefly in sorting which transactions will go in each block.  
-It is NOT used to retrieve a balance, it was originally designed to but that created one hell of bug that took days to find.  
-The block timestamp plus the transactions index within that block is used for balance retrieval functions. (further explained in mining section)
+It is NOT used to retrieve a balance; it was originally designed to but that created one hell of bug that took days to find.  
+The block timestamp plus the transactions index within that block is used for balance retrieval functions. (further explained in the 'Determiation of Balances, whats different about marks?' section.)
 
 ### Seperate Mempool per Server
 
@@ -114,12 +121,16 @@ I had started with the intention of synchronising mempools between servers, but 
 Servers MUST have separate memory pools and MUST have the ability to 'recycle' rejected or invalid blocks. The complexity of recycling would use tremendous bandwidth and/or CPU time if servers could share some, (but not all) transactions.  
 for eg. transaction validation currently does **not** involve searching the **entire** blockchain. If transactions **could** be in multiple mempools, we would need to check the entire chain for the existence of that transaction's Hash during mining (the entire chain, for every transaction).  
 
-This is to be considered a 'missing' feature. In a truely 'distributed, immutable ledger' each server would be able to grab transactions from other nearby (low ping) servers.  
-Transactions automatically generated by the gui just apply fees at 1% of the transaction value. However when creating transactions you can set the fee to whatever you want, this is a key feature in other currencies as when servers 'grab' transactions from other server's mempools they cherry-pick those with the highest fees. A way to ensure your transaction gets into the chain quickly is to set your fee higher. The custom fee feature is in my gui, but isn't relevant as there is no 'cherry-picking'.
+This is to be considered a 'missing' feature. In a truly 'distributed, immutable ledger' each server would be able to grab transactions from other nearby (low ping) servers.  
+Transactions automatically generated by the gui just apply fees at 1% of the transaction value. However, when creating transactions you can set the fee to whatever you want, this is a key feature in other currencies as when servers 'grab' transactions from other server's mempools they cherry-pick those with the highest fees. A way to ensure your transaction gets into the chain quickly is to set your fee higher. The custom fee feature is in my gui but isn't relevant as there is no 'cherry-picking'.
 
 ## Blockchain, Mining, Proof of work
 
-Wall of text goes here
+
+TODO:  
+TODO:  
+TODO:  
+TODO:  
 
 
 Each block consists of:
@@ -164,8 +175,41 @@ Example of a block json object in the chain:
 "TransactionHashes":["3c11aca3aa27213de7f0b69cef858ac66c9e1c935e92654dd7e3317dcdd2cea9","7d0feb2a9acda9267ea314a3d61aead79636366e57980826f3a5059f4c021cf8","4d8186251a220394b635cda66345fc50016511d10e97b4b45a0ecc9626252245"]}
 ```
 
-### Determination of Balances, and whats different about 'marks'
+### Determination of Balances, whats different about 'marks'?
 
+To move value between wallets Bitcoin uses a ‘change’ system referred to as UTXOs ( Unspent Transaction Outputs ). Each transaction has sender UTXO’s assigned to it until the collective value of them is greater than the transaction value. Any remaining funds are now considered a UTXO for future use. 
+<img src="utxo.jpeg" alt="Bitcoin UTXO system" width="1000"/>
+< Image lifted from: <a href="https://medium.com/dcresearch/tracking-bitcoin-market-cycles-with-utxo-7ab554daed66"> medium.com </a> >
+
+The Anderson Chain forgoes this system entirely and instead records the balance of both wallets involved within in each transaction.  
+My balance system is designed to be far more efficient and simpler than the utxo system at the cost of privacy.  
+The code however is not simpler at all, the complexity of finding the most recent validated balance grew as more advanced blockchain features were introduced. Transactions added to the mempool when they are **invalid** that **later become valid** and ‘tampered with’ blocks being identified and recycled both necessitated re-designs and re-writes of the balance retrieval code. It remains accurate and more efficient in the event of very long chains but is far from simple.
+
+Each time a transaction is being added to a block before it is mined, the balanceFromArrayThenChain() function is called.
+
+``` php
+function balanceFromArrayThenChain($key, $array) {
+
+  if (!empty($array)){
+    foreach(array_reverse($array) as $a => $b) {
+      if ($key === $b['Sender']){
+        return floatval($b['Sender Balance']);
+      }
+      else if ($key === $b['Receiver']){
+        return floatval($b['Receiver Balance']);
+      }
+    }
+  }
+    // if we get though the current selected list, and haven't got a
+    // balance yet, dig into the blockchain for it
+  return floatval(getBalance($key));
+}
+```
+
+This function is required to allow a wallet to appear in a single block more than once. (If we JUST did a transaction with this wallet, use that balance - don't go digging again)  
+Only when this array finds nothing ( first transaction of the current block featuring this wallet ) does it go the block chain for a balance.
+
+The getBalance() function (lines 93-133 of getBalance.php) retrieves the balance from the blockchain. It is more complicated as it needs to select from a list of transactions, choosing the most recently validated currently on the chain. We need to generate a list from several blocks to account for fringe cases of transaction being validated out of order, or validated twice, or the very rare occurrence that servers have different chains for just 1 mining cycle (resulting in recycling)  
 
 ## Theory and Project references
 
@@ -185,12 +229,12 @@ On top of the python example from the second Udemy course I’ve also been using
 
 I also made use of <https://www.blockchain.com/explorer> during both theory and development.
 
-TODO:
+## Final Thoughts  
 
-FINAL gui tweak for test wallet access
+After completing this unit and digging into the 'nuts and bolts' of these systems my views on the future of crypto currency have changed. I no longer see the great potential in these systems, I now see only environmental damage.
 
-Write-up:  
- Blockchain, Mining, Proof of work  
- Determiation of Balances, and whats different about 'marks'  
- 'tamper-proof' video  
-write-up Polish  
+* A cryptocurrency  being government controlled removes the need for the 'hashing race' but also removes most of the fundamental advantages of the idea. Giving even greater control over which transactions get processed and when they get processed to those proven most dishonest.  
+I feel that a government controlled cryptocurrency **replacing** cash would be a catastrophe both economically and for civil rights. (A cryptocurrency working alongside current systems has merit)
+
+* A p2p distributed system such as bitcoin or any other major crypto currency **requires** the 'hashing race'. I see no way of avoiding this key part of these systems.  
+Incentive is required to maintain the ledger and competition will always spring from that. As this system is more widely adopted and each block's transaction fees rise it will become increasingly profitable to waste as power at scale. This cannot be sustained.
