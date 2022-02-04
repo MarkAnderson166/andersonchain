@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $timestamp    = microtime(true);
   $fees         = 0;
 
-    // coinbase halving based on chain length instead of blocks/time for now.
+    // coinbase halving
   foreach($blocksJsonData as $obj => $key) {
     if ( $key['Index'] % 20 == 0 ){
       if ($coinbase >= 2) { $coinbase = $coinbase/2; };
@@ -138,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // the miner receives the mining rewards as a transaction, which is 
     // made at the time of mining., trans must be made after fee calculation.
   $coinbaseTimestamp = microtime(true);
-  //$hash = hash('sha256', $sender.$receiver.$value.$fee.$timestamp);
 
   $coinbaseTransHash = hash('sha256','Mining_Reward'.$miner.$coinbase.'0'.$coinbaseTimestamp);
   $minerBalance = balanceFromArrayThenChain($miner, $finalTransList) + $coinbase +$fees;
@@ -172,7 +171,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // we don't need to pointlessly burn power for this assesment.
 
     // sleep() is to account for ajax ping (only needed for exessively easy 0's)
-    // I'll explain this in the readme.md
   sleep(1);
   $hash = 'a';
 
@@ -183,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   }
   
-  while ( substr($hash,0,4) !== '0000' ){ // && getChainLength() === $index){
+  while ( substr($hash,0,4) !== '0000' ){
     $nonce++;
     $hash = hash('sha256',$nonce.$miner.$index.$previousHash.$timestamp.$dataStr);
   }
@@ -199,13 +197,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       'TransactionData' => $finalTransList,
                       'TransactionHashes' => $includedTransactionHashes  );
 
-    //  if our chain length has changed while we were mining, don't bother
-    //  broadcasting, we lost the race, no one wants our block.
-              // RECYCLING IS AFTER BROADCAST !!!!  -  OPTIMISE LATER
-  //if ( getChainLength() === $index ){
     broadcastBlock($newBlock);
     echo json_encode('New block mined by: '.$miner);
-  //}
 }
 
 
@@ -317,11 +310,3 @@ function scrapBlocks($blocksJsonData, $brokenBlock){
   }
   file_put_contents('blockChain.json', json_encode($newChain));
 }
-
-/*
-function getChainLength() {
-  $json = file_get_contents('blockChain.json');
-  $blocksJsonData = json_decode($json, true);
-  return count($blocksJsonData);
-}
-*/
