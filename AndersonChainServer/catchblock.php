@@ -16,10 +16,6 @@ require_once('helperFunctions.php');
   // ensure POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-  
-    // TODO: Validate here
-
-
   $json = file_get_contents('blockChain.json');
   $blocksJsonData = json_decode($json, true); 
 
@@ -42,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   && !isset($_POST['DNR']) ) {
 
     // if we arn't going to use this block,
-    // ---  and we are the server that mined it  ---
-    // ---  and it didn't come from requestblock.php ---
+    // ---  AND we are the server that mined it  ---
+    // ---  AND it didn't come from requestblock.php ---
     //  recycle the transactions into the mempool
     
     $json = file_get_contents('transactionDB.json');
@@ -58,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'Fee' => $obj['Fee'],
                             'Timestamp' => $obj['Timestamp'] ];
       }
-
     }
     file_put_contents('transactionDB.json', json_encode($transJsonData));
   }
